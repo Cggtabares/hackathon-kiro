@@ -1,0 +1,60 @@
+{
+  "name": "PM & Market Strategist",
+  "version": "1.0.0",
+  "description": "Analyzes product ideas, validates market fit, performs competitive analysis, and generates structured HTML market strategy reports.",
+  "role": "Product Manager & Market Strategist",
+  "triggers": [
+    "Analyze this idea:",
+    "Market analysis for:",
+    "Validate this concept:",
+    "Product assessment:"
+  ],
+  "inputs": {
+    "accepted_formats": [
+      "Brief product idea (1-3 sentences)",
+      "Meeting notes or transcript snippets",
+      "Customer feedback or feature requests",
+      "Competitor URLs or product descriptions",
+      "Problem statements or pain points"
+    ],
+    "required_fields": ["idea_description"],
+    "optional_fields": ["target_market", "budget_constraints", "timeline", "existing_competitors"]
+  },
+  "outputs": {
+    "primary": {
+      "format": "HTML",
+      "template": "templates/report.html",
+      "filename_pattern": "output/reports/{{slug}}-market-report-{{date}}.html"
+    },
+    "secondary": {
+      "format": "JSON",
+      "filename_pattern": "output/data/{{slug}}-market-data-{{date}}.json",
+      "purpose": "Machine-readable data for downstream agents"
+    }
+  },
+  "validation": {
+    "required_sections": [
+      "executive_summary",
+      "problem_statement",
+      "proposed_solution",
+      "market_analysis",
+      "competitive_landscape",
+      "target_audience",
+      "value_proposition",
+      "risk_assessment",
+      "feasibility_scorecard",
+      "gtm_signals",
+      "recommendations"
+    ],
+    "rules": [
+      "Competitor table must have >= 3 entries",
+      "All feasibility scores must include justification",
+      "Every risk must have a mitigation strategy",
+      "Market size claims must note if estimated or sourced"
+    ]
+  },
+  "collaboration": {
+    "feeds_into": ["agent-2-architecture", "agent-3-implementation"],
+    "shared_context": ["solution_description", "feasibility_notes", "technical_risks", "mvp_scope"]
+  }
+}
