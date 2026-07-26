@@ -51,10 +51,10 @@ Generates a styled HTML report — see [`agents/pm-market-strategist/examples/ex
 You can feed the agent with informal text — meeting notes, Slack messages, or a brief description:
 
 ```text
-Analyze this idea: "Queremos construir una plataforma que conecte freelancers 
-de LATAM con startups de US/EU que buscan talento remoto asequible. Algo como 
-Toptal pero más accesible y enfocado en devs junior-mid con inglés intermedio. 
-Muchas startups no pueden pagar $150/hr pero sí $40-60/hr."
+Analyze this idea: "We want to build a platform that connects LATAM freelancers 
+with US/EU startups looking for affordable remote talent. Something like Toptal 
+but more accessible and focused on junior-mid devs with intermediate English. 
+Many startups can't pay $150/hr but can pay $40-60/hr."
 ```
 
 Or more structured input with extra context:
@@ -77,8 +77,10 @@ Context:
 
 The agent produces:
 
-1. **HTML Report** → `output/reports/ai-code-review-bot-market-report-2026-07-26.html`
-2. **JSON Data** → `output/data/ai-code-review-bot-market-data-2026-07-26.json`
+1. **HTML Report** → `output/reports/{{slug}}-market-report-{{date}}.html`
+2. **JSON Data** → `output/data/{{slug}}-market-data-{{date}}.json`
+
+> These folders are gitignored. For reference, check the example outputs in `agents/pm-market-strategist/examples/`.
 
 #### Step 3: Review the output
 
@@ -140,10 +142,11 @@ The JSON output can also be consumed programmatically by other agents.
 
 The agent has been tested with multiple idea types. Full example outputs are in `agents/pm-market-strategist/examples/`:
 
-| Example | Type | Input | Verdict | Score |
-|---------|------|-------|---------|-------|
-| [Slack Thread Summarizer](agents/pm-market-strategist/examples/example-output.html) | B2B SaaS | "Slack bot that summarizes threads with AI" | ✅ GO | 7.7/10 |
-| [SaveQuest](agents/pm-market-strategist/examples/example-output-fintech.html) | B2C Consumer | "Gamified savings app for Gen Z in LATAM" | ⚠️ GO with caution | 7.0/10 |
+| Example | Type | Input | Output | Verdict | Score |
+|---------|------|-------|--------|---------|-------|
+| [Slack Thread Summarizer](agents/pm-market-strategist/examples/example-output.html) | B2B SaaS | "Slack bot that summarizes threads with AI" | ✅ HTML | ✅ GO | 7.7/10 |
+| [SaveQuest](agents/pm-market-strategist/examples/example-output-fintech.html) | B2C Consumer | "Gamified savings app for Gen Z in LATAM" | ✅ HTML | ⚠️ GO with caution | 7.0/10 |
+| [Restaurant Reservations](agents/pm-market-strategist/examples/example-output-reservas.html) | B2C Platform | "Restaurant reservation app for LATAM" | ✅ HTML | ✅ GO | 7.3/10 |
 
 #### More example ideas in the prompt (with expected output summaries):
 
@@ -165,18 +168,24 @@ hackathon-kiro/
 │       ├── templates/
 │       │   └── report.html        # HTML report template with placeholders
 │       └── examples/
-│           ├── example-input.md          # Sample input (Slack summarizer)
-│           ├── example-input-fintech.md  # Sample input (Gen Z savings app)
-│           ├── example-output.html       # Full report: Slack summarizer
-│           └── example-output-fintech.html # Full report: SaveQuest (16 sections)
+│           ├── example-input.md              # Sample input (Slack summarizer)
+│           ├── example-input-fintech.md      # Sample input (Gen Z savings app)
+│           ├── example-input-reservas.md     # Sample input (Restaurant reservations LATAM)
+│           ├── example-output.html           # Full report: Slack summarizer
+│           ├── example-output-fintech.html   # Full report: SaveQuest (16 sections)
+│           └── example-output-reservas.html  # Full report: Restaurant reservations
 ├── shared/
 │   └── schemas/
 │       └── market-report-schema.json  # JSON schema for report validation
-├── output/                        # Generated reports (gitignored)
+├── output/                        # Generated reports (gitignored, created at runtime)
+│   ├── reports/                   # HTML reports: <slug>-market-report-<date>.html
+│   └── data/                      # JSON data: <slug>-market-data-<date>.json
 └── .kiro/
     └── steering/
         └── project-overview.md    # Project steering file
 ```
+
+> **Note:** The `output/` folder is gitignored and gets created when you run the agent. Example outputs live in `agents/pm-market-strategist/examples/` for reference.
 
 ## For Teammates
 
