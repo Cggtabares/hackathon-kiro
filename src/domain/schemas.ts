@@ -84,3 +84,64 @@ export const Agent2OutputSchema = z.object({
   design: DesignSchema,
   tasks: z.array(TaskItemSchema).min(1),
 });
+
+// ─── Agent 4: DevSecOps, Quality & Automation Engineer ──────────────────────
+
+export const Agent4SecurityPolicySchema = z.object({
+  name: z.string().trim().min(1).max(256),
+  description: z.string().trim().min(1).max(256),
+  enforcement: z.string().trim().min(1).max(256),
+});
+
+export const Agent4TaskItemSchema = z.object({
+  id: z.string().trim().min(1).max(64),
+  title: z.string().trim().min(1).max(256),
+  description: z.string().trim().min(1).max(1024),
+  dependencies: z.array(z.string().trim().min(1).max(64)).max(50),
+});
+
+export const Agent4LicenseEntrySchema = z.object({
+  package: z.string().trim().min(1),
+  license: z.string().trim().min(1),
+});
+
+export const Agent4ComplianceReportSchema = z.object({
+  licenseSummary: z.array(Agent4LicenseEntrySchema).min(1),
+  regulatoryFlags: z.array(z.string().trim().min(1)),
+});
+
+export const Agent4InputSchema = z.object({
+  projectName: z.string().trim().min(1).max(128),
+  stack: z.array(z.string().trim().min(1).max(64)).min(1).max(20),
+  architecturePattern: z.string().trim().min(1),
+  securityPolicies: z.array(Agent4SecurityPolicySchema).min(1),
+  taskList: z.array(Agent4TaskItemSchema).min(1).max(200),
+  complianceReport: Agent4ComplianceReportSchema,
+});
+
+// Agent4 Output schemas with structural refinements
+
+export const Agent4HooksSchema = z.object({
+  validateSpecs: z.string().min(10).refine(s => s.startsWith("#!/"), {
+    message: "Hook must start with shebang",
+  }),
+  scanSecrets: z.string().min(10).refine(s => s.startsWith("#!/"), {
+    message: "Hook must start with shebang",
+  }),
+});
+
+export const Agent4OutputSchema = z.object({
+  dockerfile: z.string().min(20).refine(
+    s => (s.match(/FROM/g) || []).length >= 2,
+    { message: "Dockerfile must contain at least two FROM directives (multi-stage)" },
+  ),
+  dockerCompose: z.string().min(20).refine(
+    s => s.includes("services"),
+    { message: "docker-compose must contain 'services' key" },
+  ),
+  ciPipeline: z.string().min(20).refine(
+    s => s.includes("jobs"),
+    { message: "CI pipeline must contain 'jobs' key" },
+  ),
+  hooks: Agent4HooksSchema,
+});
