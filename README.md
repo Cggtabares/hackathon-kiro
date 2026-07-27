@@ -1,276 +1,228 @@
-# KiroSpec Studio — Agent 2: Software Architect, Security & Financial Officer
+# KiroSpec Studio
 
-## What Is This
+> Herramienta de especificación de software e ingeniería en tiempo real basada en agentes de IA.
 
-Agent 2 is an AI-powered service that transforms a product vision into complete, validated architecture documentation. It receives structured input from Agent 1 (Product Manager) and generates four specification files ready for implementation.
+## 📋 Overview
 
-Part of a 4-agent pipeline for KiroSpec Studio, a hackathon project that auto-generates entire development workspaces from a single idea.
+Kiro Spec Studio es una herramienta de especificación de software e ingeniería en tiempo real basada en agentes de IA. A través de una experiencia conversacional guiada (Architect Wizard), el sistema toma una idea abstracta de software y la transforma automáticamente en un paquete técnico completo dentro de un entorno tipo IDE minimalista (Workbench). Genera especificaciones detalladas, diseño de arquitectura, matriz de cumplimiento y artefactos reales de DevSecOps con suites de pruebas verificadas.
 
-## Pipeline Position
+### ¿Qué problema soluciona?
+
+Elimina la enorme brecha y fricción existente entre la concepción de una idea de software y la creación de una arquitectura técnica segura, lista para producción. Tradicionalmente, redactar especificaciones, diagramar arquitecturas, verificar normativas de privacidad (GDPR/compliance) y configurar pipelines de CI/CD requiere semanas de trabajo senior. Kiro Spec Studio automatiza este proceso en minutos mediante un pipeline multagente coordinado que entrega artefactos funcionales y testeados.
+
+### Este repositorio
+
+Implementa **Agent 2** (Software Architect) y **Agent 4** (DevSecOps), y contiene las directrices/prompts para **Agent 1** (PM) y **Agent 3** (Legal).
+
+## 📦 Tech Stack
+
+| Capa | Tecnología |
+|------|-----------|
+| Runtime | Node.js 22, TypeScript 5.8 (strict) |
+| Framework | Next.js 15 (App Router) |
+| LLM | Vercel AI SDK (`generateObject` con schema enforcement) |
+| Validación | Zod (tipos en compilación + validación runtime) |
+| Testing | Vitest + fast-check (property-based) |
+| Infra | Docker multi-stage, GitHub Actions CI/CD |
+| Offline | MockLlmClient con respuestas pre-construidas |
+
+## 🏗️ Pipeline Completo
 
 ```
-Agent 1 (PM & Market Strategist)
-    │
-    │  produces: projectName, productVision, targetAudience,
-    │            valueProposition, mvpFeatures, expectedMetrics
-    ▼
-Agent 2 (Software Architect) ← THIS REPO
-    │
-    │  produces: tech.md, requirements.md, design.md, tasks.md
-    ▼
-Agent 3 (Legal & Compliance)
-    │
-    ▼
-Agent 4 (DevSecOps & Automation)
+Idea/Input → Agent 1 → Agent 2 → Agent 3 → Agent 4 → 🚀 Proyecto listo
 ```
 
-## What It Produces
+| # | Agente | Responsabilidad | Output | Estado |
+|---|--------|----------------|--------|--------|
+| 1 | PM & Market Strategist | Validación de mercado, competencia, TAM/SAM/SOM | Reporte HTML + JSON + `product.md` | 📝 Directrices |
+| 2 | Software Architect | Stack, Clean Architecture, EARS requirements, costos AWS | `tech.md`, `requirements.md`, `design.md`, `tasks.md` | ✅ Implementado |
+| 3 | Legal & Compliance | Privacidad, licencias, GDPR/LFPDPPP, regulaciones | `compliance.md` con payload Agent 4 | 📝 Directrices |
+| 4 | DevSecOps & Automation | Docker, CI/CD, hooks de seguridad | `Dockerfile`, `docker-compose.yml`, `ci.yml`, hooks | ✅ Implementado |
 
-| File                          | Content                                                                                 |
-| ----------------------------- | --------------------------------------------------------------------------------------- |
-| `.kiro/steering/tech.md`      | Stack selection, Clean Architecture boundaries, SOLID rules, security policies          |
-| `.kiro/specs/requirements.md` | Functional requirements in EARS syntax (WHEN/SHALL patterns)                            |
-| `.kiro/specs/design.md`       | DDD entities, Mermaid sequence diagram, IAM policies, AWS cost breakdown (MVP vs Scale) |
-| `.kiro/specs/tasks.md`        | Sequential task list with dependency ordering                                           |
-
-## Quick Start
+## 🚀 Quick Start
 
 ```bash
-# Install dependencies
+# Instalar dependencias
 npm install
 
-# Run Agent 2 in offline mode (no API key needed)
+# Demo Agent 2 — genera specs de arquitectura (offline, sin API key)
 npm run demo
 
-# Run tests
+# Demo Agent 4 — genera Dockerfile, CI/CD, hooks (offline, sin API key)
+npm run demo-agent4
+
+# Correr los 77 tests
 npm test
-```
 
-### Output from `npm run demo`:
-
-```
-🏗️  Agent 2 — Software Architect Demo (offline mode)
-
-📥 Loading Agent 1 mock input...
-🤖 Generating architecture specification (mocked LLM)...
-
-✅ Agent 2 output generated successfully!
-
-📋 Stack: Next.js 15, TypeScript 5.x, Node.js 22 LTS, Vercel AI SDK, Zod, PostgreSQL, Docker, Terraform
-🏛️  Architecture: Clean
-📝 Requirements: 33 lines
-🗂️  Domain entities: 3
-💰 MVP cost: $37.00/mo
-💰 Scale cost: $1755.00/mo
-📦 Tasks: 6
-
-📁 Files written to .kiro/
-```
-
-## Usage Modes
-
-### 1. Offline Demo (no API key)
-
-```bash
-npm run demo
-```
-
-Uses a pre-built mock response. Deterministic, zero network calls. Ideal for hackathon presentations.
-
-### 2. Programmatic (with mock)
-
-```typescript
-import { createAgent2 } from "./src/index";
-import mockResponse from "./.kiro/mocks/agent2.mock-response.json";
-
-const agent2 = createAgent2({ mockLlmResponse: mockResponse });
-const result = await agent2.execute();
-```
-
-### 3. Programmatic (with real LLM)
-
-```typescript
-import { createAgent2 } from "./src/index";
-
-// Requires OPENAI_API_KEY in environment
-const agent2 = createAgent2({ model: "gpt-4o" });
-const result = await agent2.execute({
-  agent1Output: {
-    projectName: "MyApp",
-    productVision: "An app that does X",
-    targetAudience: "Developers",
-    valueProposition: "Saves time doing Y",
-    mvpFeatures: ["Feature A", "Feature B"],
-    expectedMetrics: {
-      mvpMonthlyUsers: 1000,
-      scaleMonthlyUsers: 50000,
-      peakConcurrentConnections: 200,
-    },
-  },
-  preferredStack: ["React", "Supabase", "Vercel"],
-});
-```
-
-### 4. API Endpoint (Next.js)
-
-```bash
-# Start the dev server
+# Servidor de desarrollo (Next.js)
 npm run dev
-
-# Call the endpoint
-curl -X POST http://localhost:3000/api/generate-spec \
-  -H "Content-Type: application/json" \
-  -d '{
-    "agent1Output": { ... },
-    "preferredStack": ["React", "Node.js"]
-  }'
 ```
 
-**Response codes:**
+## 🖥️ Frontend (UI Demo)
 
-- `200` — Success, returns `Agent2Output` JSON
-- `400` — Validation error (bad input)
-- `502` — LLM transient error (timeout, rate limit)
-- `500` — Permanent error (auth failure, filesystem)
+La interfaz visual del pipeline está en la rama [`feat/ui-demo`](https://github.com/elecodes/hackathon-kiro/tree/feat/ui-demo) del repo principal.
 
-## Input Contract (from Agent 1)
+**Repo:** [github.com/elecodes/hackathon-kiro](https://github.com/elecodes/hackathon-kiro) — branch `feat/ui-demo`
 
-```typescript
-interface Agent1Output {
-  projectName: string;
-  productVision: string;
-  targetAudience: string;
-  valueProposition: string;
-  mvpFeatures: string[]; // min 1 item
-  expectedMetrics: {
-    mvpMonthlyUsers: number; // positive
-    scaleMonthlyUsers: number; // positive
-    peakConcurrentConnections: number; // positive
-  };
-}
-```
+Incluye:
+- Interfaz tipo browser simulado con pestañas por agente (Mercado, Técnico, Costos, Compliance, Tareas)
+- Input en dos modos: rápido (1-2 oraciones) y experto (brief completo)
+- Visualización del pipeline de 4 agentes en tiempo real
+- Next.js App Router con componentes React
 
-A fallback mock is available at `.kiro/mocks/agent1.mock.json` for development.
+El diseño completo está documentado en [`ui-design.md`](./ui-design.md).
 
-## Output Contract (for Agents 3 & 4)
-
-```typescript
-interface Agent2Output {
-  techSteering: {
-    stack: string[];
-    architecturePattern: "Clean" | "Hexagonal";
-    solidBoundaries: { principle: string; rule: string; layer: string }[];
-    securityGuards: { name: string; description: string; enforcement: string }[];
-  };
-  requirements: string;  // EARS-formatted markdown
-  design: {
-    domainEntities: { name: string; properties: {...}[]; relationships: string[] }[];
-    mermaidDiagram: string;
-    iamPolicySummary: { service: string; actions: string[]; resource: string; effect: "Allow"|"Deny" }[];
-    awsCostProjection: {
-      mvpMonthlyCostUsd: { service: string; monthlyCostUsd: number }[];
-      scaleMonthlyCostUsd: { service: string; monthlyCostUsd: number }[];
-    };
-  };
-  tasks: { id: string; title: string; description: string; dependencies: string[] }[];
-}
-```
-
-## Architecture
-
-```
-src/
-├── domain/              ← Pure types, Zod schemas, typed errors (no I/O)
-├── application/         ← Use case + port interfaces (LlmPort, MockLoaderPort, FileWriterPort)
-├── infrastructure/      ← Concrete adapters (Vercel AI SDK, filesystem, mock LLM)
-├── presentation/        ← Next.js App Router API route
-├── config/              ← System prompt constant
-├── __tests__/           ← Property-based + unit + integration tests
-└── index.ts             ← Factory function (createAgent2)
-```
-
-**Clean Architecture** — dependencies point inward only. Swap LLM providers by implementing `LlmPort`. No code changes needed in domain or application layers.
-
-## Tech Stack
-
-- **Runtime**: Node.js 22, TypeScript 5.8 (strict)
-- **Framework**: Next.js 15 (App Router)
-- **LLM**: Vercel AI SDK (`generateObject` with schema enforcement) — swappable for Genkit
-- **Validation**: Zod (compile-time types + runtime validation)
-- **Testing**: Vitest + fast-check (property-based testing)
-- **Offline**: MockLlmClient with pre-built response
-
-## Testing
-
-```bash
-npm test              # Run all 77 tests
-npm run test:watch    # Watch mode
-npm run test:coverage # With coverage report
-```
-
-### Test Breakdown
-
-| Category                  | Tests  | What It Covers                             |
-| ------------------------- | ------ | ------------------------------------------ |
-| Schema unit tests         | 27     | Valid/invalid objects, edge cases          |
-| Error unit tests          | 11     | Error construction, field propagation      |
-| Use case unit tests       | 16     | Happy path, fallback, error classification |
-| Infrastructure unit tests | 8      | Mock loader, file writer                   |
-| Integration tests         | 3      | Full pipeline end-to-end                   |
-| Property tests (P1–P6)    | 12     | 100 iterations each, universal correctness |
-| **Total**                 | **77** | **All passing**                            |
-
-### Correctness Properties (PBT)
-
-1. **Schema rejects invalid objects** with correct error paths
-2. **Valid objects round-trip** through schema without loss
-3. **File writer preserves** all output content
-4. **Input validation precedes** LLM invocation (always)
-5. **All errors carry** operation name + context
-6. **Task dependencies** form valid topological order
-
-## Error Handling
-
-| Error Type           | HTTP Code | Retryable | Contains                           |
-| -------------------- | --------- | --------- | ---------------------------------- |
-| ValidationError      | 400       | No        | fieldPath, expectedType, operation |
-| LlmError (transient) | 502       | Yes       | message, isTransient=true          |
-| LlmError (permanent) | 500       | No        | message, isTransient=false         |
-| FilesystemError      | 500       | Maybe     | targetPath, cause                  |
-
-## Project Structure
+## 📁 Estructura del Proyecto
 
 ```
 hackathon-kiro/
-├── src/                        ← Source code (Clean Architecture)
+├── src/
+│   ├── domain/              ← Tipos puros, schemas Zod, errores tipados
+│   ├── application/         ← Casos de uso + interfaces de puertos
+│   ├── infrastructure/      ← Adaptadores (Vercel AI SDK, filesystem, mocks)
+│   ├── presentation/        ← API REST (Next.js App Router)
+│   ├── config/              ← System prompts para LLMs
+│   ├── lib/prompts/         ← Prompt del agente de compliance
+│   ├── __tests__/           ← Unit + property-based + integration tests
+│   └── index.ts             ← Factories: createAgent2(), createAgent4()
+├── agents/
+│   └── pm-market-strategist/ ← Prompt, config, templates y ejemplos de Agent 1
 ├── scripts/
-│   └── demo.ts                 ← Offline demo runner
+│   ├── demo.ts              ← Demo offline Agent 2
+│   └── demo-agent4.ts       ← Demo offline Agent 4
+├── shared/schemas/          ← Schemas compartidos (market report)
+├── docs/                    ← Documentación para equipos
 ├── .kiro/
-│   ├── mocks/
-│   │   ├── agent1.mock.json          ← Fallback input (Agent 1 output)
-│   │   └── agent2.mock-response.json ← Pre-built LLM response for demos
-│   ├── steering/
-│   │   └── tech.md                   ← Generated output
-│   └── specs/
-│       ├── requirements.md           ← Generated output
-│       ├── design.md                 ← Generated output
-│       └── tasks.md                  ← Generated output
-├── docs/
-│   └── agent4-readme.md       ← Reference doc for Agent 4 team
-├── package.json
-├── tsconfig.json
-├── vitest.config.ts
-└── README.md                  ← This file
+│   ├── mocks/               ← Respuestas mock para demos
+│   ├── steering/            ← Archivos de steering generados
+│   └── specs/               ← Specs generadas
+├── .github/workflows/       ← CI/CD pipeline
+├── Dockerfile               ← Build multi-stage (deps → build → runtime)
+├── docker-compose.yml       ← App + PostgreSQL con redes aisladas
+└── vitest.config.ts         ← Config de testing
 ```
 
-## For Teammates
+## 🧩 Agent 1 — PM & Market Strategist (directrices)
 
-**Agent 1 team**: Your output needs to match `Agent1OutputSchema` (see Input Contract above). Write it to `.kiro/steering/product.md` as JSON, or pass it directly to Agent 2's API.
+**Ubicación:** `agents/pm-market-strategist/`
 
-**Agent 3 team**: You can consume Agent 2's output from `.kiro/specs/design.md` (for IAM policies, entities with PII) and `.kiro/steering/tech.md` (for stack/license audit). Or call the API and parse the JSON response.
+Contiene el prompt completo, configuración, templates HTML y ejemplos de input/output para el agente de análisis de mercado. No requiere implementación técnica — es una guía para un LLM externo que produce:
 
-**Agent 4 team**: See `docs/agent4-readme.md` for what you can consume. All spec files are well-structured markdown with consistent section headers.
+- Análisis de mercado con TAM/SAM/SOM
+- Competitive landscape (mínimo 3 competidores)
+- Feasibility scorecard (1-10)
+- Monetization model canvas
+- Failure mode analysis con kill criteria
 
-## Developer
+## 🧩 Agent 2 — Software Architect (implementado)
 
-**Elena Menéndez** — Agent 2 implementation for KiroSpec Studio hackathon.
+**Input:** `Agent1Output` (projectName, productVision, targetAudience, mvpFeatures, expectedMetrics)
+
+**Output:**
+| Archivo | Contenido |
+|---------|-----------|
+| `.kiro/steering/tech.md` | Stack, Clean Architecture, SOLID, security policies |
+| `.kiro/specs/requirements.md` | Requirements en sintaxis EARS (WHEN/SHALL) |
+| `.kiro/specs/design.md` | Entidades DDD, diagrama Mermaid, IAM, costos AWS |
+| `.kiro/specs/tasks.md` | Tareas secuenciales con dependencias |
+
+**Modos de uso:**
+
+```typescript
+// Offline (mock)
+const agent2 = createAgent2({ mockLlmResponse: mockData });
+const result = await agent2.execute();
+
+// Con LLM real (requiere OPENAI_API_KEY)
+const agent2 = createAgent2({ model: "gpt-4o" });
+const result = await agent2.execute({ agent1Output, preferredStack });
+```
+
+**API:** `POST /api/generate-spec` → 200 (ok) / 400 (validación) / 502 (LLM transient) / 500 (permanente)
+
+## 🧩 Agent 3 — Legal & Compliance (directrices)
+
+**Ubicación:** `src/lib/prompts/compliance-agent.ts`
+
+System prompt para que un agente externo realice auditoría legal basándose en los outputs de Agent 1 y Agent 2. Cubre:
+
+- Privacy y data-protection assessment
+- Open-source license audit (con clasificación de riesgo)
+- Regulatory flags para Agent 4
+- Payload JSON machine-readable (`json:agent4-payload`)
+
+Documentación completa del handoff en `docs/legal-compliance-handoff.md`.
+
+## 🧩 Agent 4 — DevSecOps & Automation (implementado)
+
+**Input:** projectName, stack, architecturePattern, securityPolicies, taskList, complianceReport
+
+**Output:**
+| Archivo | Contenido |
+|---------|-----------|
+| `Dockerfile` | Multi-stage build (deps → build → runtime), non-root user, healthcheck |
+| `docker-compose.yml` | App + DB con redes aisladas y volúmenes persistentes |
+| `.github/workflows/ci.yml` | Pipeline: lint, typecheck, test, security, license-check, build, deploy |
+| `.kiro/hooks/validate-specs.sh` | Valida existencia y formato de specs |
+| `.kiro/hooks/scan-secrets.sh` | Escanea secrets en archivos staged |
+
+```typescript
+const agent4 = createAgent4({ mockLlmResponse: mockData });
+const result = await agent4.execute(input);
+```
+
+## 🏛️ Cómo fluye la data
+
+```
+Input (idea) → Validación Zod → LLM (GPT-4o) → Validación Zod → Archivos .kiro/
+```
+
+El código usa **Clean Architecture**: los tipos y reglas viven en `domain/`, la lógica de negocio en `application/`, y los adaptadores (LLM, filesystem) en `infrastructure/`. Esto permite cambiar de proveedor LLM sin tocar la lógica — solo implementas la interfaz `LlmPort`.
+
+## ✅ Testing (77 tests)
+
+```bash
+npm test              # Todos los tests
+npm run test:coverage # Con reporte de cobertura
+```
+
+| Categoría | Tests | Qué cubre |
+|-----------|-------|-----------|
+| Schema unit | 27 | Objetos válidos/inválidos, edge cases |
+| Error unit | 11 | Construcción de errores, propagación de campos |
+| Use case unit | 16 | Happy path, fallback, clasificación de errores |
+| Infrastructure | 8 | Mock loader, file writer |
+| Integration | 3 | Pipeline completo end-to-end |
+| Property-based (PBT) | 12 | 100 iteraciones cada uno, correctness universal |
+| **Total** | **77** | **All passing** |
+
+**Propiedades de correctness verificadas:**
+1. Schemas rechazan objetos inválidos con paths de error correctos
+2. Objetos válidos hacen round-trip sin pérdida de datos
+3. File writer preserva todo el contenido
+4. Validación de input siempre precede a invocación del LLM
+5. Todos los errores llevan nombre de operación + contexto
+6. Dependencias de tareas forman un orden topológico válido
+
+## 🤝 Integration Guide
+
+**Agent 1 → Agent 2:** Tu output debe cumplir `Agent1OutputSchema`. Escríbelo a `.kiro/steering/product.md` como JSON o pásalo a la API.
+
+**Agent 2 → Agent 3:** Consume `.kiro/specs/design.md` (IAM policies, entidades con PII) y `.kiro/steering/tech.md` (stack para license audit).
+
+**Agent 3 → Agent 4:** El bloque `json:agent4-payload` al final de `compliance.md` es el contrato. Agent 4 lo parsea con regex.
+
+**Agent 4 → Desarrollo:** Después de Agent 4, `docker compose up` da un environment funcional sin configuración manual.
+
+## 👥 Team
+
+- **Elena Menéndez** ([@elecodes](https://github.com/elecodes)) — Agent 2, UI Demo
+
+- **Jonathan Brasales** ([@JonnyBP](https://github.com/JonnyBP)) — Agent 4, documentación.
+
+- **xxx** ([@xxx](https://github.com/xxx)) — Agent 1.
+
+- **xxx** ([@xxx](https://github.com/xxx)) — Agent 3.
+
+
+- **Equipo** — [hackathon-kiro](https://github.com/JonnyBP/hackathon-kiro)
