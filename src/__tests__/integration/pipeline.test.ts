@@ -144,7 +144,7 @@ describe("Integration: End-to-end pipeline", () => {
       expect(result).toEqual(VALID_AGENT2_OUTPUT);
       expect(result.techSteering.stack).toContain("TypeScript");
       expect(result.tasks).toHaveLength(2);
-      expect(result.design.domainEntities[0].name).toBe("Project");
+      expect(result.design.domainEntities[0]!.name).toBe("Project");
 
       // Also verify the file writer works by writing to temp dir directly
       await tempFileWriter.writeAll(result, tempDir);
@@ -208,7 +208,7 @@ describe("Integration: End-to-end pipeline", () => {
 
       expect(result).toEqual(VALID_AGENT2_OUTPUT);
       expect(result.techSteering.architecturePattern).toBe("Clean");
-      expect(result.tasks[0].id).toBe("task-1");
+      expect(result.tasks[0]!.id).toBe("task-1");
     });
   });
 

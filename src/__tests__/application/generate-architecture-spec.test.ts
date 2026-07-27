@@ -206,7 +206,7 @@ describe("GenerateArchitectureSpecUseCase", () => {
         preferredStack: ["React", "Node.js", "PostgreSQL"],
       });
 
-      const userPrompt = llm.invoke.mock.calls[0][1] as string;
+      const userPrompt = llm.invoke.mock.calls[0]![1] as string;
       expect(userPrompt).toContain(
         "Preferred stack: React, Node.js, PostgreSQL",
       );
@@ -227,7 +227,7 @@ describe("GenerateArchitectureSpecUseCase", () => {
 
       await useCase.execute({ agent1Output: validAgent1Output });
 
-      const userPrompt = llm.invoke.mock.calls[0][1] as string;
+      const userPrompt = llm.invoke.mock.calls[0]![1] as string;
       expect(userPrompt).not.toContain("Preferred stack");
       expect(userPrompt).toBe(JSON.stringify(validAgent1Output));
     });

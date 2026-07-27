@@ -240,7 +240,7 @@ describe("Feature: agent2-architect, Property 1: Schema validation rejects inval
         expect(result.success).toBe(false);
 
         if (!result.success) {
-          const firstIssue = result.error.issues[0];
+          const firstIssue = result.error.issues[0]!;
           expect(firstIssue.path.length).toBeGreaterThan(0);
           expect(firstIssue.message).toBeDefined();
         }
@@ -280,7 +280,7 @@ describe("Feature: agent2-architect, Property 6: Task dependencies form a valid 
       fc.property(validTaskListArb, (tasks) => {
         // For each task, all dependencies must reference IDs of tasks that appear earlier
         for (let i = 0; i < tasks.length; i++) {
-          const task = tasks[i];
+          const task = tasks[i]!;
           const earlierIds = tasks.slice(0, i).map((t) => t.id);
           for (const dep of task.dependencies) {
             expect(earlierIds).toContain(dep);
@@ -307,7 +307,7 @@ describe("Feature: agent2-architect, Property 6: Task dependencies form a valid 
           }));
 
           // Verify the topological order is violated
-          const firstTask = tasks[0];
+          const firstTask = tasks[0]!;
           const earlierIds: string[] = [];
           const hasViolation = firstTask.dependencies.some(
             (dep) => !earlierIds.includes(dep),

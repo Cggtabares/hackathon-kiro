@@ -1,228 +1,226 @@
 # KiroSpec Studio
 
-> Herramienta de especificación de software e ingeniería en tiempo real basada en agentes de IA.
+> Real-time software specification and engineering powered by coordinated AI agents.
 
 ## 📋 Overview
 
-Kiro Spec Studio es una herramienta de especificación de software e ingeniería en tiempo real basada en agentes de IA. A través de una experiencia conversacional guiada (Architect Wizard), el sistema toma una idea abstracta de software y la transforma automáticamente en un paquete técnico completo dentro de un entorno tipo IDE minimalista (Workbench). Genera especificaciones detalladas, diseño de arquitectura, matriz de cumplimiento y artefactos reales de DevSecOps con suites de pruebas verificadas.
+KiroSpec Studio is an AI-agent-powered software specification tool. Through a guided conversational experience (Architect Wizard), the system takes an abstract software idea and automatically transforms it into a complete technical package inside a minimalist IDE-like environment (Workbench). It generates detailed specifications, architecture design, compliance matrices, and real DevSecOps artifacts with verified test suites.
 
-### ¿Qué problema soluciona?
+### The Problem
 
-Elimina la enorme brecha y fricción existente entre la concepción de una idea de software y la creación de una arquitectura técnica segura, lista para producción. Tradicionalmente, redactar especificaciones, diagramar arquitecturas, verificar normativas de privacidad (GDPR/compliance) y configurar pipelines de CI/CD requiere semanas de trabajo senior. Kiro Spec Studio automatiza este proceso en minutos mediante un pipeline multagente coordinado que entrega artefactos funcionales y testeados.
+Bridging the gap between a software idea and a production-ready, secure technical architecture is expensive. Writing specs, diagramming architectures, verifying privacy regulations (GDPR/compliance), and configuring CI/CD pipelines typically requires weeks of senior engineering time. KiroSpec Studio automates this entire process in minutes through a coordinated multi-agent pipeline that delivers functional, tested artifacts — no fakes, no static data.
 
-### Este repositorio
+### This Repository
 
-Implementa **Agent 2** (Software Architect) y **Agent 4** (DevSecOps), y contiene las directrices/prompts para **Agent 1** (PM) y **Agent 3** (Legal).
+Implements **Agent 2** (Software Architect) and **Agent 4** (DevSecOps), and contains the prompts/guidelines for **Agent 1** (PM) and **Agent 3** (Legal).
 
 ## 📦 Tech Stack
 
-| Capa | Tecnología |
-|------|-----------|
+| Layer | Technology |
+|-------|-----------|
 | Runtime | Node.js 22, TypeScript 5.8 (strict) |
 | Framework | Next.js 15 (App Router) |
-| LLM | Vercel AI SDK (`generateObject` con schema enforcement) |
-| Validación | Zod (tipos en compilación + validación runtime) |
-| Testing | Vitest + fast-check (property-based) |
-| Infra | Docker multi-stage, GitHub Actions CI/CD |
-| Offline | MockLlmClient con respuestas pre-construidas |
+| LLM | Vercel AI SDK (`generateObject` with schema enforcement) |
+| Validation | Zod (compile-time types + runtime validation) |
+| Testing | Vitest + fast-check (property-based testing) |
+| Infrastructure | Docker multi-stage, GitHub Actions CI/CD |
+| Offline Mode | MockLlmClient with pre-built responses |
 
-## 🏗️ Pipeline Completo
+## 🏗️ Pipeline
 
 ```
-Idea/Input → Agent 1 → Agent 2 → Agent 3 → Agent 4 → 🚀 Proyecto listo
+Idea → Agent 1 → Agent 2 → Agent 3 → Agent 4 → 🚀 Ready to Code
 ```
 
-| # | Agente | Responsabilidad | Output | Estado |
-|---|--------|----------------|--------|--------|
-| 1 | PM & Market Strategist | Validación de mercado, competencia, TAM/SAM/SOM | Reporte HTML + JSON + `product.md` | 📝 Directrices |
-| 2 | Software Architect | Stack, Clean Architecture, EARS requirements, costos AWS | `tech.md`, `requirements.md`, `design.md`, `tasks.md` | ✅ Implementado |
-| 3 | Legal & Compliance | Privacidad, licencias, GDPR/LFPDPPP, regulaciones | `compliance.md` con payload Agent 4 | 📝 Directrices |
-| 4 | DevSecOps & Automation | Docker, CI/CD, hooks de seguridad | `Dockerfile`, `docker-compose.yml`, `ci.yml`, hooks | ✅ Implementado |
+| # | Agent | Responsibility | Output | Status |
+|---|-------|---------------|--------|--------|
+| 1 | PM & Market Strategist | Market validation, competition, TAM/SAM/SOM | HTML report + JSON + `product.md` | 📝 Guidelines |
+| 2 | Software Architect | Stack, Clean Architecture, EARS requirements, AWS costs | `tech.md`, `requirements.md`, `design.md`, `tasks.md` | ✅ Implemented |
+| 3 | Legal & Compliance | Privacy, licenses, GDPR/LFPDPPP, regulations | `compliance.md` with Agent 4 payload | 📝 Guidelines |
+| 4 | DevSecOps & Automation | Docker, CI/CD, security hooks | `Dockerfile`, `docker-compose.yml`, `ci.yml`, hooks | ✅ Implemented |
 
 ## 🚀 Quick Start
 
 ```bash
-# Instalar dependencias
+# Install dependencies
 npm install
 
-# Demo Agent 2 — genera specs de arquitectura (offline, sin API key)
+# Demo Agent 2 — generates architecture specs (offline, no API key needed)
 npm run demo
 
-# Demo Agent 4 — genera Dockerfile, CI/CD, hooks (offline, sin API key)
+# Demo Agent 4 — generates Dockerfile, CI/CD, hooks (offline, no API key needed)
 npm run demo-agent4
 
-# Correr los 77 tests
+# Run all 125 tests
 npm test
 
-# Servidor de desarrollo (Next.js)
+# Development server (Next.js)
 npm run dev
 ```
 
 ## 🖥️ Frontend (UI Demo)
 
-La interfaz visual del pipeline está en la rama [`feat/ui-demo`](https://github.com/elecodes/hackathon-kiro/tree/feat/ui-demo) del repo principal.
+The visual interface lives on the [`feat/ui-demo`](https://github.com/elecodes/hackathon-kiro/tree/feat/ui-demo) branch.
 
 **Repo:** [github.com/elecodes/hackathon-kiro](https://github.com/elecodes/hackathon-kiro) — branch `feat/ui-demo`
 
-Incluye:
-- Interfaz tipo browser simulado con pestañas por agente (Mercado, Técnico, Costos, Compliance, Tareas)
-- Input en dos modos: rápido (1-2 oraciones) y experto (brief completo)
-- Visualización del pipeline de 4 agentes en tiempo real
-- Next.js App Router con componentes React
+Features:
+- Simulated browser layout with per-agent tabs (Market, Technical, Costs, Compliance, Tasks)
+- Two input modes: quick (1-2 sentences) and expert (full brief)
+- Real-time 4-agent pipeline visualization
+- Next.js App Router with React components
 
-El diseño completo está documentado en [`ui-design.md`](./ui-design.md).
+Full design spec in [`ui-design.md`](./ui-design.md).
 
-## 📁 Estructura del Proyecto
+## 📁 Project Structure
 
 ```
 hackathon-kiro/
 ├── src/
-│   ├── domain/              ← Tipos puros, schemas Zod, errores tipados
-│   ├── application/         ← Casos de uso + interfaces de puertos
-│   ├── infrastructure/      ← Adaptadores (Vercel AI SDK, filesystem, mocks)
-│   ├── presentation/        ← API REST (Next.js App Router)
-│   ├── config/              ← System prompts para LLMs
-│   ├── lib/prompts/         ← Prompt del agente de compliance
+│   ├── domain/              ← Pure types, Zod schemas, typed errors
+│   ├── application/         ← Use cases + port interfaces
+│   ├── infrastructure/      ← Adapters (Vercel AI SDK, filesystem, mocks)
+│   ├── presentation/        ← REST API (Next.js App Router)
+│   ├── config/              ← LLM system prompts
+│   ├── lib/prompts/         ← Compliance agent prompt
 │   ├── __tests__/           ← Unit + property-based + integration tests
 │   └── index.ts             ← Factories: createAgent2(), createAgent4()
 ├── agents/
-│   └── pm-market-strategist/ ← Prompt, config, templates y ejemplos de Agent 1
+│   └── pm-market-strategist/ ← Agent 1 prompt, config, templates, examples
 ├── scripts/
-│   ├── demo.ts              ← Demo offline Agent 2
-│   └── demo-agent4.ts       ← Demo offline Agent 4
-├── shared/schemas/          ← Schemas compartidos (market report)
-├── docs/                    ← Documentación para equipos
+│   ├── demo.ts              ← Agent 2 offline demo
+│   └── demo-agent4.ts       ← Agent 4 offline demo
+├── shared/schemas/          ← Shared validation schemas
+├── docs/                    ← Team documentation
 ├── .kiro/
-│   ├── mocks/               ← Respuestas mock para demos
-│   ├── steering/            ← Archivos de steering generados
-│   └── specs/               ← Specs generadas
+│   ├── mocks/               ← Mock responses for demos
+│   ├── steering/            ← Generated steering files
+│   └── specs/               ← Generated spec files
 ├── .github/workflows/       ← CI/CD pipeline
-├── Dockerfile               ← Build multi-stage (deps → build → runtime)
-├── docker-compose.yml       ← App + PostgreSQL con redes aisladas
-└── vitest.config.ts         ← Config de testing
+├── Dockerfile               ← Multi-stage build (deps → build → runtime)
+├── docker-compose.yml       ← App + PostgreSQL with isolated networks
+└── vitest.config.ts         ← Test configuration
 ```
 
-## 🧩 Agent 1 — PM & Market Strategist (directrices)
+## 🧩 Agent 1 — PM & Market Strategist (guidelines)
 
-**Ubicación:** `agents/pm-market-strategist/`
+**Location:** `agents/pm-market-strategist/`
 
-Contiene el prompt completo, configuración, templates HTML y ejemplos de input/output para el agente de análisis de mercado. No requiere implementación técnica — es una guía para un LLM externo que produce:
+Contains the full prompt, configuration, HTML templates, and example I/O for the market analysis agent. No technical implementation required — it's a guide for an external LLM that produces:
 
-- Análisis de mercado con TAM/SAM/SOM
-- Competitive landscape (mínimo 3 competidores)
+- Market analysis with TAM/SAM/SOM
+- Competitive landscape (minimum 3 competitors)
 - Feasibility scorecard (1-10)
 - Monetization model canvas
-- Failure mode analysis con kill criteria
+- Failure mode analysis with kill criteria
 
-## 🧩 Agent 2 — Software Architect (implementado)
+## 🧩 Agent 2 — Software Architect (implemented)
 
 **Input:** `Agent1Output` (projectName, productVision, targetAudience, mvpFeatures, expectedMetrics)
 
 **Output:**
-| Archivo | Contenido |
-|---------|-----------|
-| `.kiro/steering/tech.md` | Stack, Clean Architecture, SOLID, security policies |
-| `.kiro/specs/requirements.md` | Requirements en sintaxis EARS (WHEN/SHALL) |
-| `.kiro/specs/design.md` | Entidades DDD, diagrama Mermaid, IAM, costos AWS |
-| `.kiro/specs/tasks.md` | Tareas secuenciales con dependencias |
 
-**Modos de uso:**
+| File | Content |
+|------|---------|
+| `.kiro/steering/tech.md` | Stack, Clean Architecture, SOLID, security policies |
+| `.kiro/specs/requirements.md` | Requirements in EARS syntax (WHEN/SHALL) |
+| `.kiro/specs/design.md` | DDD entities, Mermaid diagram, IAM policies, AWS costs |
+| `.kiro/specs/tasks.md` | Sequential tasks with dependency ordering |
+
+**Usage:**
 
 ```typescript
-// Offline (mock)
+// Offline (mock — no API key)
 const agent2 = createAgent2({ mockLlmResponse: mockData });
 const result = await agent2.execute();
 
-// Con LLM real (requiere OPENAI_API_KEY)
+// With real LLM (requires OPENAI_API_KEY)
 const agent2 = createAgent2({ model: "gpt-4o" });
 const result = await agent2.execute({ agent1Output, preferredStack });
 ```
 
-**API:** `POST /api/generate-spec` → 200 (ok) / 400 (validación) / 502 (LLM transient) / 500 (permanente)
+**API:** `POST /api/generate-spec` → 200 (success) / 400 (validation) / 502 (LLM transient) / 500 (permanent)
 
-## 🧩 Agent 3 — Legal & Compliance (directrices)
+## 🧩 Agent 3 — Legal & Compliance (guidelines)
 
-**Ubicación:** `src/lib/prompts/compliance-agent.ts`
+**Location:** `src/lib/prompts/compliance-agent.ts`
 
-System prompt para que un agente externo realice auditoría legal basándose en los outputs de Agent 1 y Agent 2. Cubre:
+System prompt for an external agent to perform legal audits based on Agent 1 and Agent 2 outputs. Covers:
 
-- Privacy y data-protection assessment
-- Open-source license audit (con clasificación de riesgo)
-- Regulatory flags para Agent 4
-- Payload JSON machine-readable (`json:agent4-payload`)
+- Privacy and data-protection assessment
+- Open-source license audit (risk classification)
+- Regulatory flags for Agent 4
+- Machine-readable JSON payload (`json:agent4-payload`)
 
-Documentación completa del handoff en `docs/legal-compliance-handoff.md`.
+Full handoff documentation in `docs/legal-compliance-handoff.md`.
 
-## 🧩 Agent 4 — DevSecOps & Automation (implementado)
+## 🧩 Agent 4 — DevSecOps & Automation (implemented)
 
 **Input:** projectName, stack, architecturePattern, securityPolicies, taskList, complianceReport
 
 **Output:**
-| Archivo | Contenido |
-|---------|-----------|
+
+| File | Content |
+|------|---------|
 | `Dockerfile` | Multi-stage build (deps → build → runtime), non-root user, healthcheck |
-| `docker-compose.yml` | App + DB con redes aisladas y volúmenes persistentes |
+| `docker-compose.yml` | App + DB with isolated networks and persistent volumes |
 | `.github/workflows/ci.yml` | Pipeline: lint, typecheck, test, security, license-check, build, deploy |
-| `.kiro/hooks/validate-specs.sh` | Valida existencia y formato de specs |
-| `.kiro/hooks/scan-secrets.sh` | Escanea secrets en archivos staged |
+| `.kiro/hooks/validate-specs.sh` | Validates spec file existence and format |
+| `.kiro/hooks/scan-secrets.sh` | Scans staged files for leaked credentials |
 
 ```typescript
 const agent4 = createAgent4({ mockLlmResponse: mockData });
 const result = await agent4.execute(input);
 ```
 
-## 🏛️ Cómo fluye la data
+## 🏛️ Data Flow
 
 ```
-Input (idea) → Validación Zod → LLM (GPT-4o) → Validación Zod → Archivos .kiro/
+Input (idea) → Zod Validation → LLM (GPT-4o) → Zod Validation → .kiro/ files
 ```
 
-El código usa **Clean Architecture**: los tipos y reglas viven en `domain/`, la lógica de negocio en `application/`, y los adaptadores (LLM, filesystem) en `infrastructure/`. Esto permite cambiar de proveedor LLM sin tocar la lógica — solo implementas la interfaz `LlmPort`.
+The codebase follows **Clean Architecture**: types and business rules live in `domain/`, orchestration logic in `application/`, and adapters (LLM, filesystem) in `infrastructure/`. Swap LLM providers by implementing the `LlmPort` interface — zero changes to domain or application layers.
 
-## ✅ Testing (77 tests)
+## ✅ Testing (125 tests)
 
 ```bash
-npm test              # Todos los tests
-npm run test:coverage # Con reporte de cobertura
+npm test              # Run all tests
+npm run test:coverage # With coverage report
 ```
 
-| Categoría | Tests | Qué cubre |
-|-----------|-------|-----------|
-| Schema unit | 27 | Objetos válidos/inválidos, edge cases |
-| Error unit | 11 | Construcción de errores, propagación de campos |
-| Use case unit | 16 | Happy path, fallback, clasificación de errores |
+| Category | Tests | Covers |
+|----------|-------|--------|
+| Schema unit | 27 | Valid/invalid objects, edge cases |
+| Error unit | 11 | Error construction, field propagation |
+| Use case unit | 16 | Happy path, fallback, error classification |
 | Infrastructure | 8 | Mock loader, file writer |
-| Integration | 3 | Pipeline completo end-to-end |
-| Property-based (PBT) | 12 | 100 iteraciones cada uno, correctness universal |
-| **Total** | **77** | **All passing** |
+| Integration | 25 | Full pipeline end-to-end (Agent 2 + Agent 4) |
+| Property-based (PBT) | 38 | 100 iterations each, universal correctness |
+| **Total** | **125** | **All passing** |
 
-**Propiedades de correctness verificadas:**
-1. Schemas rechazan objetos inválidos con paths de error correctos
-2. Objetos válidos hacen round-trip sin pérdida de datos
-3. File writer preserva todo el contenido
-4. Validación de input siempre precede a invocación del LLM
-5. Todos los errores llevan nombre de operación + contexto
-6. Dependencias de tareas forman un orden topológico válido
+**Verified correctness properties:**
+1. Schemas reject invalid objects with correct error paths
+2. Valid objects round-trip through schemas without data loss
+3. File writer preserves all output content
+4. Input validation always precedes LLM invocation
+5. All errors carry operation name + context
+6. Task dependencies form a valid topological order
 
 ## 🤝 Integration Guide
 
-**Agent 1 → Agent 2:** Tu output debe cumplir `Agent1OutputSchema`. Escríbelo a `.kiro/steering/product.md` como JSON o pásalo a la API.
+**Agent 1 → Agent 2:** Output must conform to `Agent1OutputSchema`. Write to `.kiro/steering/product.md` as JSON, or pass directly to the API.
 
-**Agent 2 → Agent 3:** Consume `.kiro/specs/design.md` (IAM policies, entidades con PII) y `.kiro/steering/tech.md` (stack para license audit).
+**Agent 2 → Agent 3:** Consumes `.kiro/specs/design.md` (IAM policies, entities with PII) and `.kiro/steering/tech.md` (stack for license audit).
 
-**Agent 3 → Agent 4:** El bloque `json:agent4-payload` al final de `compliance.md` es el contrato. Agent 4 lo parsea con regex.
+**Agent 3 → Agent 4:** The `json:agent4-payload` block at the end of `compliance.md` is the contract. Agent 4 parses it via regex.
 
-**Agent 4 → Desarrollo:** Después de Agent 4, `docker compose up` da un environment funcional sin configuración manual.
+**Agent 4 → Development:** After Agent 4 completes, `docker compose up` gives you a working dev environment with zero manual configuration.
 
 ## 👥 Team
 
 - **Elena Menéndez** ([@elecodes](https://github.com/elecodes)) — Agent 2, UI Demo
+- **Jonathan Brasales** ([@JonnyBP](https://github.com/JonnyBP)) — Agent 4, documentation
+- **xxx** ([@xxx](https://github.com/xxx)) — Agent 1
+- **xxx** ([@xxx](https://github.com/xxx)) — Agent 3
 
-- **Jonathan Brasales** ([@JonnyBP](https://github.com/JonnyBP)) — Agent 4, documentación.
-
-- **xxx** ([@xxx](https://github.com/xxx)) — Agent 1.
-
-- **xxx** ([@xxx](https://github.com/xxx)) — Agent 3.
-
-
-- **Equipo** — [hackathon-kiro](https://github.com/JonnyBP/hackathon-kiro)
+**Organization:** [hackathon-kiro](https://github.com/JonnyBP/hackathon-kiro)
