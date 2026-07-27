@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MesaYa — Market Strategy Report</title>
+    <style>
+        :root {
+            --primary: #dc2626;
+            --primary-light: #fef2f2;
+            --success: #16a34a;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6; color: var(--gray-800);
+            background: var(--gray-50); padding: 2rem;
+        }
+        .report-container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); overflow: hidden; }
+        .report-header { background: linear-gradient(135deg, var(--primary), #991b1b); color: white; padding: 2.5rem 3rem; }
+        .report-header h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+        .report-header .subtitle { opacity: 0.9; font-size: 1rem; }
+        .report-meta { display: flex; gap: 2rem; margin-top: 1.5rem; font-size: 0.875rem; opacity: 0.85; }
+        .report-body { padding: 3rem; }
+        .section { margin-bottom: 2.5rem; }
+        .section-title { font-size: 1.25rem; color: var(--primary); border-bottom: 2px solid var(--primary-light); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        .executive-summary { background: var(--primary-light); border-left: 4px solid var(--primary); padding: 1.25rem 1.5rem; border-radius: 0 8px 8px 0; font-size: 1.05rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+        th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--gray-200); }
+        th { background: var(--gray-100); font-weight: 600; color: var(--gray-900); }
+        .score-card { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+        .score-item { background: var(--gray-100); border-radius: 8px; padding: 1.25rem; text-align: center; }
+        .score-item .score-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+        .score-item .score-label { font-size: 0.85rem; color: var(--gray-600); margin-top: 0.25rem; }
+        .score-high { color: var(--success) !important; }
+        .score-medium { color: var(--warning) !important; }
+        .score-low { color: var(--danger) !important; }
+        .risk-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        .risk-high { background: #fef2f2; color: var(--danger); }
+        .risk-medium { background: #fffbeb; color: var(--warning); }
+        .risk-low { background: #f0fdf4; color: var(--success); }
+        .recommendation-box { border: 2px solid; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+        .recommendation-go { border-color: var(--success); background: #f0fdf4; }
+        ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+        li { margin-bottom: 0.35rem; }
+        .persona-card { background: var(--gray-100); border-radius: 8px; padding: 1.25rem; margin: 0.75rem 0; }
+        .persona-card h4 { color: var(--primary); margin-bottom: 0.5rem; }
+        .value-prop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+        .value-prop-item { background: var(--gray-100); border-radius: 8px; padding: 1rem; }
+        .value-prop-item h4 { font-size: 0.9rem; color: var(--gray-600); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .handoff-section { background: var(--gray-100); border-radius: 8px; padding: 1.5rem; margin-top: 1rem; }
+        .handoff-section h4 { color: var(--gray-900); margin-bottom: 0.75rem; }
+        .timing-meter { background: var(--gray-200); border-radius: 99px; height: 12px; margin: 0.5rem 0; overflow: hidden; }
+        .timing-meter-fill { background: linear-gradient(90deg, var(--success), var(--warning)); height: 100%; border-radius: 99px; }
+        .expansion-phase { border-left: 3px solid var(--primary); padding-left: 1rem; margin: 0.75rem 0; }
+        .stakeholder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+        .stakeholder-item { background: var(--gray-100); border-radius: 8px; padding: 1rem; }
+        .stakeholder-item h4 { font-size: 0.9rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .footer { text-align: center; padding: 1.5rem; background: var(--gray-100); font-size: 0.8rem; color: var(--gray-600); }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="report-header">
+            <h1>MesaYa — Reservas de Restaurantes para LATAM</h1>
+            <p class="subtitle">Market Strategy & Feasibility Report</p>
+            <div class="report-meta">
+                <span>📅 Generated: 2026-07-26</span>
+                <span>🤖 Agent: PM & Market Strategist v1.1</span>
+                <span>📊 Sections: 16</span>
+            </div>
+        </div>
+
+        <div class="report-body">
+            <!-- 1. EXECUTIVE SUMMARY -->
+            <div class="section">
+                <h2 class="section-title">1. Executive Summary</h2>
+                <div class="executive-summary">
+                    MesaYa es una plataforma de reservas de restaurantes diseñada para ciudades medianas en Latinoamérica, donde las soluciones globales (OpenTable, Resy) no tienen presencia significativa. El mercado de reservas digitales en LATAM está en etapa temprana con una oportunidad estimada de $1.2B en SAM. La combinación de baja penetración digital en restaurantes medianos, crecimiento del food-tourism, y la ausencia de un líder regional claro genera una ventana de oportunidad de 24 meses. Feasibility score: 7.3/10 con recomendación GO.
+                </div>
+            </div>
+
+            <!-- 2. PROBLEM STATEMENT -->
+            <div class="section">
+                <h2 class="section-title">2. Problem Statement</h2>
+                <p>En ciudades medianas de LATAM (Guadalajara, Medellín, Córdoba, Curitiba), los restaurantes medianos (50-150 cubiertos) gestionan reservas por teléfono, WhatsApp, o cuadernos físicos. Esto genera: no-shows sin consecuencia (25-35%), overbooking en fines de semana, pérdida de datos del comensal, y cero visibilidad para nuevos clientes buscando dónde comer. Los comensales, por su lado, enfrentan: llamadas sin respuesta, incertidumbre de disponibilidad, y ninguna forma digital de descubrir restaurantes con mesa libre esta noche.</p>
+            </div>
+
+            <!-- 3. PROPOSED SOLUTION -->
+            <div class="section">
+                <h2 class="section-title">3. Proposed Solution</h2>
+                <p>Una plataforma mobile-first y web que conecta comensales con restaurantes mediante reservas digitales en tiempo real. Para el restaurante: dashboard simple de gestión de mesas, confirmación automática por WhatsApp, reducción de no-shows con recordatorios y penalización leve. Para el comensal: búsqueda por disponibilidad, tipo de cocina y ubicación, reserva en 3 taps, historial de visitas y recomendaciones. Diferenciación clave: integración profunda con WhatsApp (canal dominante en LATAM), pricing accesible (no per-cover fees como OpenTable), y enfoque en ciudades medianas desatendidas.</p>
+            </div>
+
+            <!-- 4. MARKET ANALYSIS -->
+            <div class="section">
+                <h2 class="section-title">4. Market Analysis</h2>
+                <table>
+                    <thead>
+                        <tr><th>Metric</th><th>Estimate</th><th>Source / Basis</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>TAM</td><td>$12B</td><td>Global restaurant reservation & management software (estimated, Grand View Research)</td></tr>
+                        <tr><td>SAM</td><td>$1.2B</td><td>Restaurant tech in LATAM — reservas, POS, delivery mgmt (estimated)</td></tr>
+                        <tr><td>SOM</td><td>$80M</td><td>Reservas digitales en ciudades medianas LATAM, Año 1-3 (estimated)</td></tr>
+                    </tbody>
+                </table>
+                <h3>Market Trends</h3>
+                <ul>
+                    <li>Solo 15% de restaurantes en LATAM usan sistema digital de reservas (vs 65% en USA)</li>
+                    <li>Food tourism en LATAM crece 18% anual — turistas esperan reservar digitalmente</li>
+                    <li>WhatsApp Business API adoption en LATAM: 40% de SMBs ya lo usan para atención al cliente</li>
+                    <li>Post-COVID, comensales prefieren confirmar disponibilidad antes de salir (+72% vs pre-pandemia)</li>
+                    <li>Restaurantes medianos invirtiendo en digitalización por primera vez (POS, delivery, redes sociales)</li>
+                </ul>
+                <h3>Why Now?</h3>
+                <p>La pandemia aceleró la digitalización de restaurantes en LATAM pero se enfocó en delivery (Rappi, iFood). Ahora que delivery se estabiliza, restaurantes buscan llenar mesas presenciales. WhatsApp Business API está maduro y barato. El comensal LATAM ya está habituado a buscar restaurantes en Google/Instagram pero no tiene herramienta para reservar — el gap entre descubrimiento y acción es enorme.</p>
+            </div>
+
+            <!-- 5. COMPETITIVE LANDSCAPE -->
+            <div class="section">
+                <h2 class="section-title">5. Competitive Landscape</h2>
+                <h3>Direct Competitors</h3>
+                <table>
+                    <thead>
+                        <tr><th>Competitor</th><th>Strengths</th><th>Weaknesses</th><th>Pricing</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>OpenTable</td>
+                            <td>Marca global, red masiva, UX probada</td>
+                            <td>Cero presencia en ciudades medianas LATAM, pricing alto ($1-2.50/cover), soporte solo en inglés</td>
+                            <td>$1/cover network + $249/mo base</td>
+                        </tr>
+                        <tr>
+                            <td>TheFork (TripAdvisor)</td>
+                            <td>Presencia en México/Brasil, integración con TripAdvisor reviews</td>
+                            <td>Enfocado en restaurantes premium, UX anticuada, comisión por comensal</td>
+                            <td>€2-5/cover comisión</td>
+                        </tr>
+                        <tr>
+                            <td>Restorando (adquirido por TheFork)</td>
+                            <td>Originalmente LATAM-native, buena base en Argentina/Chile</td>
+                            <td>Post-adquisición perdió foco local, app en declive, soporte degradado</td>
+                            <td>Variable por mercado</td>
+                        </tr>
+                        <tr>
+                            <td>WhatsApp manual</td>
+                            <td>Gratuito, familiar, sin onboarding</td>
+                            <td>No escalable, sin tracking de no-shows, sin discovery, sin analytics</td>
+                            <td>Gratis</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>Indirect Competitors / Alternatives</h3>
+                <ul>
+                    <li>Google Maps "Reserve a Table" — limitado a partners, no disponible en mayoría de LATAM</li>
+                    <li>Instagram DMs — restaurantes reciben reservas por DM pero sin gestión</li>
+                    <li>Rappi/iFood — delivery, no dine-in, pero tienen la relación con el restaurante</li>
+                    <li>Cuaderno físico / llamada telefónica — el "incumbent" real</li>
+                </ul>
+                <h3>Our Differentiation</h3>
+                <p>MesaYa se diferencia por: (1) integración nativa con WhatsApp para confirmaciones y recordatorios (canal donde ya está el restaurante y el comensal), (2) pricing flat mensual sin comisión por comensal (restaurantes odian pagar por cabeza), (3) foco exclusivo en ciudades medianas desatendidas por jugadores globales, (4) onboarding en 15 minutos con foto del plano de mesas vía celular.</p>
+            </div>
+
+            <!-- 6. TARGET AUDIENCE -->
+            <div class="section">
+                <h2 class="section-title">6. Target Audience</h2>
+                <div class="persona-card">
+                    <h4>Primary (Supply): Carlos — Dueño de Restaurante, 42, Guadalajara</h4>
+                    <ul>
+                        <li><strong>Restaurante:</strong> Cocina contemporánea mexicana, 80 cubiertos, 3 años operando</li>
+                        <li><strong>Pain:</strong> 30% de no-shows los viernes, pierde $2,000 USD/mes en mesas vacías. Contesta WhatsApps de reservas hasta las 11pm</li>
+                        <li><strong>Comportamiento:</strong> Usa WhatsApp Business, Instagram para marketing, POS básico. No quiere tecnología complicada</li>
+                        <li><strong>Goal:</strong> Llenar mesas sin estar pegado al teléfono, reducir no-shows, conocer a sus clientes recurrentes</li>
+                    </ul>
+                </div>
+                <div class="persona-card">
+                    <h4>Primary (Demand): Mariana — Profesional Urbana, 32, Medellín</h4>
+                    <ul>
+                        <li><strong>Contexto:</strong> Sale a comer/cenar 3-4 veces por semana, le gusta probar nuevos lugares</li>
+                        <li><strong>Pain:</strong> Llama al restaurante y no contestan, llega sin reserva y hay 40 min de espera, no sabe qué restaurantes tienen mesa disponible hoy</li>
+                        <li><strong>Comportamiento:</strong> Busca restaurantes en Instagram y Google Maps, agenda todo desde el celular</li>
+                        <li><strong>Goal:</strong> Reservar mesa en 30 segundos y tener la certeza de que va a tener su lugar</li>
+                    </ul>
+                </div>
+                <h3>Jobs-to-be-Done (JTBD)</h3>
+                <ul>
+                    <li>Cuando quiero salir a cenar esta noche, quiero ver qué restaurantes tienen disponibilidad sin llamar a 5 lugares</li>
+                    <li>Cuando un cliente reserva, quiero confirmar automáticamente y reducir que no aparezca</li>
+                    <li>Cuando mi restaurante está lleno el sábado, quiero saber quién viene y planificar mise en place</li>
+                    <li>Cuando un turista visita mi ciudad, quiero que descubra mi restaurante y pueda reservar sin hablar español perfecto</li>
+                </ul>
+            </div>
+
+            <!-- 7. VALUE PROPOSITION CANVAS -->
+            <div class="section">
+                <h2 class="section-title">7. Value Proposition Canvas</h2>
+                <div class="value-prop-grid">
+                    <div class="value-prop-item">
+                        <h4>Customer Pains</h4>
+                        <ul>
+                            <li>No-shows generan pérdidas directas (25-35% viernes/sábados)</li>
+                            <li>Gestionar reservas por WhatsApp/teléfono no escala</li>
+                            <li>Comensales no encuentran dónde hay mesa disponible</li>
+                            <li>Restaurantes no conocen a sus clientes recurrentes</li>
+                        </ul>
+                    </div>
+                    <div class="value-prop-item">
+                        <h4>Customer Gains</h4>
+                        <ul>
+                            <li>Mesas llenas predeciblemente (ingresos estables)</li>
+                            <li>Comensal satisfecho llega sin incertidumbre</li>
+                            <li>Base de datos de clientes para marketing</li>
+                            <li>Visibilidad ante nuevos comensales y turistas</li>
+                        </ul>
+                    </div>
+                    <div class="value-prop-item">
+                        <h4>Pain Relievers</h4>
+                        <ul>
+                            <li>Recordatorios automáticos por WhatsApp 24h y 2h antes</li>
+                            <li>Dashboard visual de ocupación en tiempo real</li>
+                            <li>Búsqueda por disponibilidad inmediata para el comensal</li>
+                            <li>Sistema de reputación que penaliza no-shows recurrentes</li>
+                        </ul>
+                    </div>
+                    <div class="value-prop-item">
+                        <h4>Gain Creators</h4>
+                        <ul>
+                            <li>Perfil de restaurante con fotos, menú, y reviews integrados</li>
+                            <li>Analytics de ocupación, horarios pico, y preferencias de clientes</li>
+                            <li>Widget de reservas embeddable en Instagram y Google</li>
+                            <li>CRM básico: cumpleaños, preferencias, visitas anteriores</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. RISK ASSESSMENT -->
+            <div class="section">
+                <h2 class="section-title">8. Risk Assessment</h2>
+                <table>
+                    <thead>
+                        <tr><th>Risk</th><th>Category</th><th>Severity</th><th>Mitigation</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Chicken-and-egg: sin restaurantes no hay comensales y viceversa</td>
+                            <td>Market</td>
+                            <td><span class="risk-badge risk-high">High</span></td>
+                            <td>Empezar supply-side: ofrecer plan gratuito 6 meses a primeros 100 restaurantes por ciudad. El valor del dashboard solos justifica adopción.</td>
+                        </tr>
+                        <tr>
+                            <td>Restaurantes abandonan la plataforma si no ven comensales nuevos rápido</td>
+                            <td>Market</td>
+                            <td><span class="risk-badge risk-high">High</span></td>
+                            <td>Valor standalone: reducción de no-shows y gestión de mesas funciona sin demanda nueva. Posicionar como "tool first, marketplace second".</td>
+                        </tr>
+                        <tr>
+                            <td>WhatsApp cambia políticas de Business API o sube precios</td>
+                            <td>Technical</td>
+                            <td><span class="risk-badge risk-medium">Medium</span></td>
+                            <td>Multi-canal desde el inicio (SMS fallback, push notifications). No depender 100% de un solo canal.</td>
+                        </tr>
+                        <tr>
+                            <td>Rappi o iFood lanzan feature de reservas dine-in</td>
+                            <td>Market</td>
+                            <td><span class="risk-badge risk-medium">Medium</span></td>
+                            <td>Profundizar en herramientas de gestión para el restaurante (CRM, analytics). Si solo somos un botón de reserva, somos reemplazables.</td>
+                        </tr>
+                        <tr>
+                            <td>Baja disposición a pagar de restaurantes en ciudades medianas</td>
+                            <td>Business</td>
+                            <td><span class="risk-badge risk-medium">Medium</span></td>
+                            <td>Pricing ultra-accesible ($29/mo), ROI claro: "si evitas 2 no-shows al mes, el tool se paga solo". Freemium para onboarding.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 9. FEASIBILITY SCORECARD -->
+            <div class="section">
+                <h2 class="section-title">9. Feasibility Scorecard</h2>
+                <div class="score-card">
+                    <div class="score-item">
+                        <div class="score-value score-high">7/10</div>
+                        <div class="score-label">Viability (Business Model)</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-value score-high">8/10</div>
+                        <div class="score-label">Desirability (User Demand)</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-value score-high">7/10</div>
+                        <div class="score-label">Feasibility (Technical)</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-value score-high">7.3/10</div>
+                        <div class="score-label">Overall Score</div>
+                    </div>
+                </div>
+                <h3>Score Justification</h3>
+                <ul>
+                    <li><strong>Viability (7):</strong> SaaS flat-fee model es sano. Marketplace commission en fase 2. Riesgo: churn si restaurante no percibe ROI en 60 días. Unit economics favorables si retención > 12 meses.</li>
+                    <li><strong>Desirability (8):</strong> Pain point universal y validado — restaurantes pierden dinero cada semana por no-shows. Comensales frustrados por no poder reservar digitalmente. Gap claro en mercado LATAM.</li>
+                    <li><strong>Feasibility (7):</strong> Tech stack estándar (React Native + Node.js + PostgreSQL). WhatsApp Business API bien documentado. Complejidad principal: onboarding restaurantes 1-a-1 en fase inicial.</li>
+                </ul>
+            </div>
+
+            <!-- 10. GO-TO-MARKET SIGNALS -->
+            <div class="section">
+                <h2 class="section-title">10. Go-to-Market Signals</h2>
+                <h3>Positioning</h3>
+                <p>"MesaYa: Tu restaurante lleno, sin llamadas. Reservas digitales con confirmación por WhatsApp." Para el comensal: "Encuentra mesa disponible esta noche en 3 taps." Posicionar como herramienta de gestión primero, marketplace después.</p>
+                <h3>Pricing Model</h3>
+                <p>SaaS por suscripción mensual: Free (5 mesas, funciones básicas), Pro $29/mo (ilimitado, analytics, WhatsApp auto), Premium $79/mo (CRM, multi-sucursal, widget embeddable, prioridad en búsqueda). Sin comisión por comensal — diferenciador clave vs OpenTable/TheFork.</p>
+                <h3>Distribution Channels</h3>
+                <ul>
+                    <li>Venta directa: equipo local visitando restaurantes zona por zona (city-by-city rollout)</li>
+                    <li>Instagram Ads segmentados a dueños de restaurantes por ciudad</li>
+                    <li>Alianzas con asociaciones de restauranteros locales (CANIRAC en México)</li>
+                    <li>SEO local: "reservar restaurante [ciudad]" tiene volumen y cero competencia digital</li>
+                    <li>Para comensales: Instagram/TikTok content sobre restaurantes locales (editorial gastronómica)</li>
+                </ul>
+                <h3>Early Traction Strategies</h3>
+                <ul>
+                    <li>Lanzar en UNA ciudad (Guadalajara) con 50 restaurantes curados — densidad > cobertura</li>
+                    <li>6 meses gratis para los primeros 50 restaurantes (founding partners)</li>
+                    <li>"Noche MesaYa" — evento mensual con descuento en restaurantes de la plataforma</li>
+                    <li>Partnerships con food bloggers locales (ellos descubren, sus seguidores reservan)</li>
+                </ul>
+            </div>
+
+            <!-- 11. MONETIZATION MODEL CANVAS -->
+            <div class="section">
+                <h2 class="section-title">11. Monetization Model Canvas</h2>
+                <table>
+                    <thead>
+                        <tr><th>Model</th><th>Description</th><th>Projected Revenue</th><th>Viability</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SaaS Flat Fee</td>
+                            <td>Suscripción mensual $29-79/mo por restaurante</td>
+                            <td>$45/mo ARPU blended</td>
+                            <td>High — predecible, escalable, restaurante entiende el modelo</td>
+                        </tr>
+                        <tr>
+                            <td>Featured Listings</td>
+                            <td>Restaurantes pagan por posición premium en búsqueda del comensal</td>
+                            <td>$15/mo adicional por restaurante (30% adoption)</td>
+                            <td>Medium — funciona cuando hay volumen de comensales buscando</td>
+                        </tr>
+                        <tr>
+                            <td>Comisión por evento/experiencia</td>
+                            <td>Cenas especiales, menús degustación — MesaYa toma 10%</td>
+                            <td>$5-8/mo por restaurante activo</td>
+                            <td>Medium — requiere curación de experiencias, más ops</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>Unit Economics (Target: 500 restaurantes activos)</h3>
+                <ul>
+                    <li><strong>CAC (restaurante):</strong> $150-200 (venta directa + onboarding personalizado)</li>
+                    <li><strong>ARPU:</strong> $50/mo blended</li>
+                    <li><strong>LTV:</strong> $900 (18 meses retención promedio × $50)</li>
+                    <li><strong>LTV:CAC Ratio:</strong> 4.5:1 (saludable para marketplace SaaS)</li>
+                    <li><strong>Payback Period:</strong> 3-4 meses</li>
+                </ul>
+                <h3>Willingness-to-Pay Analysis</h3>
+                <p>Restaurantes medianos en LATAM ya pagan: $30-80/mo por POS, $50-150/mo por delivery apps, $20-50/mo por redes sociales management. Un sistema de reservas a $29-79/mo encaja en su presupuesto tech. El argumento de venta es matemático: si evitas 4 no-shows/mes de mesas de 4 personas (ticket promedio $25/persona), recuperas $400/mes → ROI de 5-10x sobre la suscripción.</p>
+            </div>
+
+            <!-- 12. MARKET TIMING SCORE -->
+            <div class="section">
+                <h2 class="section-title">12. Market Timing Score</h2>
+                <div class="score-card">
+                    <div class="score-item">
+                        <div class="score-value score-high">7/10</div>
+                        <div class="score-label">Market Timing</div>
+                    </div>
+                </div>
+                <div class="timing-meter"><div class="timing-meter-fill" style="width: 70%"></div></div>
+                <h3>Enabling Technologies</h3>
+                <ul>
+                    <li>✅ WhatsApp Business API — maduro, pricing accesible ($0.02-0.05/msg en LATAM)</li>
+                    <li>✅ React Native / Flutter — app cross-platform en semanas, no meses</li>
+                    <li>✅ Google Maps / Places API — búsqueda geolocalizada de restaurantes</li>
+                    <li>✅ Stripe / MercadoPago — cobro de suscripción sin fricción</li>
+                </ul>
+                <h3>Demand Signals</h3>
+                <ul>
+                    <li>📈 "reservar restaurante [ciudad]" — 50K+ búsquedas/mes en LATAM con CTR bajo (no hay resultado útil)</li>
+                    <li>📈 Restaurantes en Instagram: 70% incluyen "reservas por DM" en bio — señal de demanda no satisfecha</li>
+                    <li>📈 Food tourism LATAM: +18% anual, turistas internacionales esperan reservar online</li>
+                    <li>📈 Post-COVID: 72% de comensales prefieren confirmar disponibilidad antes de salir (encuesta local)</li>
+                </ul>
+                <h3>Adoption Cycle</h3>
+                <p>Actualmente en <strong>Innovators → Early Adopters</strong> para reservas digitales en ciudades medianas LATAM. Las capitales (CDMX, São Paulo, Buenos Aires) tienen algo de penetración, pero ciudades de 500K-3M habitantes están vírgenes. Ventana de oportunidad: 24 meses antes de que Rappi, Google, o un competidor global se enfoque en este segmento.</p>
+            </div>
+
+            <!-- 13. ADOPTION FRICTION MAP (B2C/Marketplace) -->
+            <div class="section">
+                <h2 class="section-title">13. Adoption Friction Map</h2>
+                <p><em>Nota: Marketplace two-sided — analizamos fricción en ambos lados (supply=restaurante, demand=comensal).</em></p>
+                <div class="stakeholder-grid">
+                    <div class="stakeholder-item">
+                        <h4>🍽️ Supply: Onboarding Friction</h4>
+                        <ul>
+                            <li>"No tengo tiempo de aprender otro software"</li>
+                            <li>"¿Y si mis clientes no lo usan?"</li>
+                            <li>Mitigation: Onboarding white-glove (equipo local configura todo), valor standalone inmediato (dashboard)</li>
+                        </ul>
+                    </div>
+                    <div class="stakeholder-item">
+                        <h4>📱 Demand: Acquisition Friction</h4>
+                        <ul>
+                            <li>"¿Para qué otra app si puedo mandar WhatsApp?"</li>
+                            <li>"No conozco esta app, ¿es confiable?"</li>
+                            <li>Mitigation: No requiere descarga para reservar (web responsive), confirmación llega por WhatsApp familiar</li>
+                        </ul>
+                    </div>
+                    <div class="stakeholder-item">
+                        <h4>🔄 Supply: Retention Friction</h4>
+                        <ul>
+                            <li>"No veo clientes nuevos, solo mis regulares reservan aquí"</li>
+                            <li>"Es más trabajo mantener dos sistemas (app + WhatsApp)"</li>
+                            <li>Mitigation: Reemplazar WhatsApp (no competir), mostrar analytics de discovery</li>
+                        </ul>
+                    </div>
+                    <div class="stakeholder-item">
+                        <h4>🔄 Demand: Retention Friction</h4>
+                        <ul>
+                            <li>"No hay suficientes restaurantes en la app todavía"</li>
+                            <li>"Solo la uso cuando no me contestan por teléfono"</li>
+                            <li>Mitigation: Densidad por zona (city-by-city), features exclusivas (descuentos por reservar en app)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 14. FAILURE MODE ANALYSIS -->
+            <div class="section">
+                <h2 class="section-title">14. Failure Mode Analysis</h2>
+                <h3>Dead Competitors Post-Mortem</h3>
+                <table>
+                    <thead>
+                        <tr><th>Product</th><th>What Happened</th><th>Lesson for Us</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Restorando (Argentina, acquired 2019)</td>
+                            <td>Líder en LATAM pero vendió a TheFork/TripAdvisor. Post-adquisición perdió equipo local, producto se estancó, restaurantes migraron a WhatsApp.</td>
+                            <td>El equipo local y relaciones directas son el moat. No puede operarse desde afuera. Mantener cultura de cercanía.</td>
+                        </tr>
+                        <tr>
+                            <td>Reserve (Brasil, 2012-2018)</td>
+                            <td>Buen producto pero no logró monetización sostenible. Comisión por comensal generaba fricción con restaurantes. Cerró operaciones.</td>
+                            <td>SaaS flat-fee > comisión por cover. El restaurante debe sentir que es SU herramienta, no que paga por sus propios clientes.</td>
+                        </tr>
+                        <tr>
+                            <td>Yelp Reservations (2010s)</td>
+                            <td>Intentó agregar reservas a reviews. Restaurantes desconfiaban por reviews negativas. Nunca alcanzó masa crítica fuera de US.</td>
+                            <td>No mezclar el juez (reviews) con el servicio (reservas) en etapa temprana. Generar confianza del restaurante primero.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>Anti-Patterns in This Market</h3>
+                <ul>
+                    <li>❌ Lanzar en múltiples ciudades a la vez sin densidad — mejor 1 ciudad con 80% cobertura</li>
+                    <li>❌ Cobrar comisión por comensal — genera resentimiento y "leakage" (restaurantes dan su WhatsApp para evitar comisión)</li>
+                    <li>❌ Enfocarse solo en demand-side sin resolver el software del restaurante — sin valor standalone, churns al no ver comensales nuevos</li>
+                    <li>❌ Overbuilding features antes de validar que restaurantes usan el dashboard diariamente</li>
+                </ul>
+                <h3>Kill Criteria</h3>
+                <ul>
+                    <li>Si después de 90 días en una ciudad, menos de 30% de restaurantes onboarded usan el dashboard semanalmente → el producto no tiene valor standalone</li>
+                    <li>Si Day-30 retention de comensales < 15% → no hay suficiente valor en la experiencia de discovery/reserva</li>
+                    <li>Si CAC de restaurante supera $300 → la venta directa no es económica, necesita otro canal</li>
+                    <li>Si no-show rate no baja al menos 10pp con recordatorios WhatsApp → la propuesta de valor principal no funciona</li>
+                </ul>
+                <h3>Pivot Triggers</h3>
+                <ul>
+                    <li>Si demand-side no crece pero restaurantes aman el dashboard → pivotar a SaaS de gestión puro (sin marketplace)</li>
+                    <li>Si ciudades medianas son muy lentas → probar en barrios/zonas de capitales que están desatendidas</li>
+                    <li>Si restaurantes no quieren pagar → model de lead-gen donde el comensal paga por reservas premium (experiencias)</li>
+                </ul>
+            </div>
+
+            <!-- 15. ADJACENT OPPORTUNITIES & EXPANSION PATH -->
+            <div class="section">
+                <h2 class="section-title">15. Adjacent Opportunities & Expansion Path</h2>
+                <div class="expansion-phase">
+                    <h4>Phase 1: Core — Reservas + Gestión de Mesas (0-12 meses)</h4>
+                    <ul>
+                        <li>App de reservas para comensales (web + mobile)</li>
+                        <li>Dashboard de gestión de mesas y turnos para restaurante</li>
+                        <li>Confirmaciones y recordatorios por WhatsApp</li>
+                        <li>Sistema de no-show tracking y waitlist</li>
+                    </ul>
+                </div>
+                <div class="expansion-phase">
+                    <h4>Phase 2: Extensiones Naturales (12-24 meses)</h4>
+                    <ul>
+                        <li>CRM de comensales: preferencias, alergias, historial, cumpleaños</li>
+                        <li>Menú digital integrado con la reserva (pre-order)</li>
+                        <li>Experiencias gastronómicas: cenas temáticas, chef's table, maridajes</li>
+                        <li>Reviews verificados (solo quienes reservaron pueden dejar review)</li>
+                        <li>Widget embeddable para Google, Instagram, y web del restaurante</li>
+                    </ul>
+                </div>
+                <div class="expansion-phase">
+                    <h4>Phase 3: Platform Play (24-36 meses)</h4>
+                    <ul>
+                        <li>Pagos integrados: split the bill, propinas digitales, pre-pago de experiencias</li>
+                        <li>Marketplace B2B: proveedores de insumos para restaurantes (cross-sell)</li>
+                        <li>Data insights para marcas de alimentos y bebidas (tendencias, preferencias por zona)</li>
+                        <li>Expansión a otros servicios con reserva: barberías, spas, actividades turísticas</li>
+                    </ul>
+                </div>
+                <h3>Land & Expand Strategy</h3>
+                <p>Land: Dashboard de gestión gratis → restaurante depende de MesaYa para operación diaria. Expand: Activar marketplace cuando hay 50+ restaurantes activos en una zona → comensales llegan → restaurante paga por premium features y posicionamiento.</p>
+            </div>
+
+            <!-- 16. RECOMMENDATIONS & NEXT STEPS -->
+            <div class="section">
+                <h2 class="section-title">16. Recommendations & Next Steps</h2>
+                <div class="recommendation-box recommendation-go">
+                    <h4>✅ RECOMMENDATION: GO</h4>
+                    <p>Mercado claramente desatendido en LATAM con pain point validado en ambos lados (restaurante y comensal). La baja penetración digital en ciudades medianas es una oportunidad, no un riesgo — significa poca competencia. La estrategia de "tool first, marketplace second" mitiga el problema de chicken-and-egg. El timing es favorable con WhatsApp API maduro y restaurantes en modo de digitalización post-COVID. Recomendación: lanzar MVP en una ciudad en 8 semanas.</p>
+                </div>
+                <h3>Key Assumptions to Validate</h3>
+                <ul>
+                    <li>Restaurantes en ciudades medianas adoptarán un software de gestión de mesas (vs seguir con WhatsApp)</li>
+                    <li>Los recordatorios por WhatsApp reducirán no-shows en al menos 10 puntos porcentuales</li>
+                    <li>Comensales usarán la app para descubrir restaurantes (no solo para reservar en su favorito)</li>
+                    <li>El modelo SaaS flat-fee es sostenible con ticket promedio de $45/mo</li>
+                    <li>Se pueden onboardear 50 restaurantes en una ciudad en 60 días con equipo de 2 personas</li>
+                </ul>
+                <h3>Suggested Experiments / MVP</h3>
+                <ul>
+                    <li><strong>Semana 1-2:</strong> Landing page + formulario de interés para restaurantes en Guadalajara. Meta: 30 restaurantes interesados.</li>
+                    <li><strong>Semana 3-6:</strong> MVP con: dashboard básico de mesas, link de reserva compartible, confirmación por WhatsApp.</li>
+                    <li><strong>Semana 7-8:</strong> Onboardear 20 restaurantes founding partners, lanzar web para comensales.</li>
+                    <li><strong>Semana 9-12:</strong> Medir: ¿restaurantes usan el dashboard diariamente? ¿No-shows bajan? ¿Comensales repiten?</li>
+                    <li><strong>Success metrics:</strong> 50%+ restaurantes usan dashboard 4+ días/semana. No-show rate baja de 30% a &lt;20%. 100+ reservas/semana en la plataforma al mes 3.</li>
+                </ul>
+                <h3>Handoff Notes</h3>
+                <div class="handoff-section">
+                    <h4>→ For Architecture Agent (Agent 2)</h4>
+                    <ul>
+                        <li>Core components: WhatsApp Business API integration, real-time availability engine, booking state machine, restaurant dashboard</li>
+                        <li>Key decisions: Multi-tenant SaaS, real-time vs eventual consistency for availability, WhatsApp message templates</li>
+                        <li>Non-functional: &lt;3s booking confirmation, 99.9% uptime during dinner hours (7-11pm), multi-timezone LATAM</li>
+                        <li>Consider: Start monolith (speed to market), plan for service extraction later. PostgreSQL for relational data, Redis for real-time availability.</li>
+                    </ul>
+                </div>
+                <div class="handoff-section" style="margin-top: 0.75rem;">
+                    <h4>→ For Implementation Agent (Agent 3)</h4>
+                    <ul>
+                        <li>MVP scope: Restaurant dashboard (web) + Booking link (web responsive) + WhatsApp confirmations</li>
+                        <li>Tech stack: Next.js (dashboard + booking web), PostgreSQL, WhatsApp Cloud API, Vercel/Railway deploy</li>
+                        <li>Timeline: 6-week sprint to beta-ready MVP</li>
+                        <li>Out of scope MVP: Mobile native app, CRM, analytics avanzados, pagos integrados, reviews</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Generated by <strong>KiroSpec Builder</strong> — PM & Market Strategist Agent v1.1
+            <br>This report is auto-generated and should be reviewed by a human before making final decisions.
+        </div>
+    </div>
+</body>
+</html>
