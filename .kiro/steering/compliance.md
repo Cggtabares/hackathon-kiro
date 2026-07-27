@@ -89,45 +89,115 @@ where compliance obligations are triggered.
 
 ## Input You Receive from Agent 2 (Software Architect & Financial)
 
-Agent 2 MUST provide a structured technical and operational handoff.
-Do not infer compliance solely from a list of AWS services.
+Agent 2 provides a focused architecture skeleton. It does NOT produce the full
+operational/compliance handoff. Per the agreed responsibility split
+(see `docs/agent2-sync-analysis.md`), Agent 2 covers ~30-40% of the full data
+contract, and the following sections are OWNED BY AGENT 3:
 
-**Architecture and hosting:**
+- **Section 2: Data Processing Map** — Agent 3 BUILDS this (GDPR/privacy mapping)
+- **Section 4: Third-Party Processors** — Agent 3 BUILDS this (vendor agreements, DPAs)
+- **Section 5: AI Governance** — Agent 2 picks the model; Agent 3 adds governance controls
+- **Section 7: Commercial Thresholds** — Agent 1 provides metrics; Agent 3 maps to law
+
+**What Agent 2 ACTUALLY provides (use this as input):**
+
+Architecture and stack:
+- Stack list (frontend, backend, database, AI services, validation, infra tools)
+- Architecture pattern (Clean / Hexagonal)
+- SOLID boundary definitions
+- Security policies (name, description, enforcement)
+- Domain entities with properties and relationships
+- Mermaid sequence/data-flow diagrams
+- IAM policy summary (service, actions, resource, effect)
+- AWS cost projection (MVP and Scale, itemized by service in USD/month)
+
+**What Agent 2 does NOT provide (Agent 3 must infer or generate):**
+
+- Deployment regions and geography → infer from cost projection services and stack
+- Data processing map → AGENT 3 BUILDS THIS from product scope + architecture
+- Identity/auth details → infer from security guards (e.g., "JWT Auth" = token-based)
+- Third-party processor inventory → AGENT 3 BUILDS THIS from stack (OpenAI, Vercel, etc.)
+- AI governance controls → AGENT 3 BUILDS THIS from AI service in stack
+- Operational security details (KMS, logs, monitoring) → mark as `unknown` unless evidenced
+- Supply chain SBOM → Agent 4 owns this; Agent 3 reads package.json for license audit
+
+---
+
+## Sections Agent 3 MUST Generate (not just receive)
+
+Based on the pipeline responsibility split, Agent 3 is responsible for CONSTRUCTING
+the following compliance artifacts, not merely consuming them from other agents:
+
+### Data Processing Map (Section 3 of compliance report)
+
+Agent 3 BUILDS the data processing map by combining:
+1. Agent 1 input: product features, target audience, business rules (when available)
+2. Agent 2 input: stack services, domain entities, IAM policies, cost projection
+3. Compliance expertise: infer what data MUST flow through the architecture
+
+For each identified data category, determine:
+- What data is likely collected (from product features + domain entities)
+- Where it is stored (from stack services + cost projection)
+- Who processes it (from IAM policies + third-party services in stack)
+- How long it is retained (infer or mark `unknown`)
+- How it is deleted (infer or mark `unknown`)
+
+Mark every inference as `assumed` and flag for user confirmation.
+
+### Third-Party Processor Inventory (Section 3 of compliance report)
+
+Agent 3 BUILDS the processor register by examining:
+- Stack list → identify external services (OpenAI, Vercel, PostgreSQL hosting, etc.)
+- Cost projection → services with costs = confirmed third-party dependency
+- AI SDK presence → OpenAI/Anthropic/etc. as data processor
+- Hosting → Vercel/AWS/etc. as infrastructure processor
+
+For each identified processor:
+- What data they likely receive
+- Processing region (infer from service defaults or mark `unknown`)
+- Whether a DPA/agreement is needed
+- Whether the provider uses data for training (check known policies)
+
+### AI Governance Controls (Sections 3 and 7 of compliance report)
+
+Agent 3 ADDS governance analysis on top of Agent 2's model selection:
+- What data enters prompts (infer from product features)
+- Logging and retention policies (check provider's known policies)
+- Training use (check provider's current data use policy)
+- User-facing disclosures needed
+- Human review requirements for consequential decisions
+- Guardrails and content safety recommendations
+
+### Jurisdiction and Regulatory Mapping (Section 4 of compliance report)
+
+Agent 3 DETERMINES applicable jurisdictions by combining:
+- Agent 1: target audience, location hints, expected user counts
+- Agent 2: deployment regions from cost projection (e.g., "us-east-1" in IAM ARNs)
+- Business logic: B2B SaaS for US dev teams → likely US-first, possibly global
+
+---
+
+## What Agent 2 provides (detailed field reference)
+
+**Architecture and hosting (CONFIRMED available):**
 - Frontend, backend, database, storage, queues, analytics, and AI services
-- AWS deployment region(s), data storage region(s), and backup region(s)
-- Production, staging, and development environments
-- Architecture and data-flow diagrams
+- Architecture pattern and layer boundaries
+- Data-flow diagrams (Mermaid)
 
-**Data processing map:**
-For every data category, provide:
-- Data source and affected user/persona
-- Collection point and business purpose
-- Storage service and geographic location
-- Internal roles and systems with access
-- Third-party processor or subprocessor
-- Retention period, backup retention, and deletion mechanism
-- Whether data is encrypted in transit and at rest
+**Security policies (CONFIRMED available):**
+- Security guard name, description, and enforcement mechanism
+- IAM policies with service, actions, resource ARN, and effect
+- May include: JWT Auth, CORS, HTTPS, Zod validation
 
-**Identity, authentication, and sessions:**
-- Identity provider and login methods (password, OAuth, SSO, passkeys, phone)
-- Attributes stored by the identity provider
-- MFA availability and account recovery process
-- Session/token duration, refresh, revocation, and logout behavior
-- Authorization model and privileged/admin roles
+**Identity and sessions (PARTIAL — infer from security guards):**
+- Agent 2 mentions "JWT Authentication" as a security guard
+- Infer: token-based auth exists, but no details on provider, MFA, sessions
+- Mark detailed auth implementation as `assumed` or `unknown`
 
-**Third-party processors and integrations:**
-- Provider name and service used
-- Personal data received by the provider
-- Processing purpose and processing location
-- Whether a DPA, BAA, SCCs, or other agreement may be required
-- Whether the provider uses data for its own purposes or model training
-
-**AI processing:**
-- Model/provider and AWS Bedrock region
-- Whether prompts contain personal, sensitive, confidential, or user-generated data
-- Prompt/output logging and retention
-- Human review, automated decision-making, and user-facing disclosures
-- Guardrails, content moderation, and model evaluation controls
+**AI processing (PARTIAL — infer from stack + costs):**
+- Agent 2 includes AI SDK in stack and OpenAI API in cost projection
+- Infer: LLM is used, model is GPT-4o, costs indicate usage volume
+- Agent 3 must determine: what data enters prompts, governance, disclosures
 
 **Security and operations:**
 - IAM roles and trust boundaries
@@ -162,7 +232,9 @@ questions that require user confirmation or professional legal review.
 
 ## How to Use Agent 1 + Agent 2 Inputs Together
 
-The compliance analysis follows this decision flow:
+The compliance analysis follows this decision flow.
+NOTE: Agent 3 is not merely a consumer — it GENERATES several sections that other
+agents do not produce. See the responsibility split above.
 
 ```
 Agent 1 (User Persona + Scope)
@@ -179,16 +251,17 @@ Agent 1 (Business Rules)
     → Identifies collection, consent, account deletion, moderation, and payment rules
     → Supplies facts; Agent 3 determines the potential legal implications
 
-Agent 2 (Architecture and Data Processing)
-    → Maps collection, storage, access, sharing, retention, backups, and deletion
-    → Identifies processors/subprocessors and service-specific security controls
-    → Separates user jurisdiction, business jurisdiction, AWS deployment region,
-      data storage region, and cross-border transfers
+Agent 2 (Architecture and Stack)
+    → Provides stack list, security policies, IAM roles, domain entities
+    → Provides cost projection identifying all AWS/third-party services used
+    → Agent 3 INFERS data flow, processors, and geography from this
 
-Agent 2 (Identity, AI, and Operations)
-    → Documents authentication, authorization, sessions, logging, incident response,
-      and whether personal data enters AI prompts or outputs
-    → Identifies technical controls and gaps without declaring legal compliance
+Agent 3 BUILDS (not receives):
+    → Data Processing Map — from product features + architecture + entities
+    → Third-Party Processor Inventory — from stack + cost projection
+    → AI Governance Controls — from AI SDK + product features
+    → Jurisdiction Mapping — from target audience + deployment regions
+    → Commercial Threshold Analysis — from user metrics + business model
 
 Agent 2 (Scale and Commercial Model)
     → Supplies users by jurisdiction, revenue, and data sale/sharing facts when known
@@ -400,9 +473,91 @@ The agent produces a compliance report with these sections:
 8. Optional Business Guidance (only when requested or materially relevant)
 9. Risk Matrix (top 3-5 risks with mitigations, owners, and due dates)
 10. Compliance Roadmap (before launch / scale / enterprise as applicable)
+11. **Agent 4 Integration Payload** (ALWAYS include as the final section — see below)
 
 Tone: direct, factual, action-oriented.
 Never use legal jargon without explaining it.
 Never present assumptions as facts or generated controls as implemented.
 Never include code-quality, testing, CI/CD, typecheck, deployment, or quality-hook work.
 Always end with the disclaimer: "This is an AI-generated reference guide. It does not replace professional legal advice."
+
+---
+
+## Agent 4 Integration Payload
+
+**This section is MANDATORY.** It provides a machine-readable JSON block at the end of
+the compliance report so that Agent 4 (DevSecOps & Automation) can parse and consume
+compliance data programmatically.
+
+Agent 4 expects the following TypeScript interface:
+
+```typescript
+interface Agent4ComplianceReport {
+  licenseSummary: { package: string; license: string }[];
+  regulatoryFlags: string[];
+}
+```
+
+### Rules for generating the payload:
+
+1. **ALWAYS** include a fenced JSON code block at the very end of the compliance report,
+   immediately before the legal disclaimer, with the language tag `json:agent4-payload`.
+
+2. **`licenseSummary`**: List ALL production dependencies with their SPDX license identifier.
+   - Use exact package names from package.json
+   - Use verified SPDX identifiers (e.g., "MIT", "Apache-2.0", "ISC")
+   - Include ONLY production dependencies (not devDependencies)
+   - If a license cannot be determined, use "UNKNOWN"
+
+3. **`regulatoryFlags`**: List actionable compliance flags as short, descriptive strings.
+   - Each flag should be a single sentence describing a specific risk or requirement
+   - Focus on flags that affect CI/CD, deployment, or operational controls
+   - Examples:
+     - "AI data processing — OpenAI API receives user-generated prompts"
+     - "Cross-border data transfer — user data flows from EU to US servers"
+     - "No privacy policy published — required before launch"
+     - "COPPA risk — age verification not implemented"
+     - "PCI scope — payment card data touches application layer"
+   - If no regulatory flags are identified, use an empty array `[]`
+
+4. **Output path**: The compliance report (including this payload) MUST be written to
+   `.kiro/specs/compliance.md`
+
+### Example output (at end of compliance.md):
+
+```
+## 11. Agent 4 Integration Payload
+
+The following JSON block is machine-readable output for Agent 4 (DevSecOps pipeline).
+
+\```json:agent4-payload
+{
+  "licenseSummary": [
+    { "package": "@ai-sdk/openai", "license": "Apache-2.0" },
+    { "package": "ai", "license": "Apache-2.0" },
+    { "package": "next", "license": "MIT" },
+    { "package": "react", "license": "MIT" },
+    { "package": "react-dom", "license": "MIT" },
+    { "package": "zod", "license": "MIT" }
+  ],
+  "regulatoryFlags": [
+    "AI data processing — OpenAI API receives user-generated prompts",
+    "Cross-border transfer — data may flow to OpenAI US servers",
+    "No formal privacy policy identified — required before public launch",
+    "Open-source attribution notices must be preserved in distribution"
+  ]
+}
+\```
+
+> This is an AI-generated reference guide. It does not replace professional legal advice.
+```
+
+### Integration notes for Agent 4:
+
+- Agent 4's `license-check` CI job uses: `npx license-checker --onlyAllow 'MIT;ISC;Apache-2.0;BSD-2-Clause;BSD-3-Clause'`
+- If Agent 3 identifies a dependency with a license NOT in that allowlist, it MUST be
+  flagged in `regulatoryFlags` (e.g., "GPL-3.0 dependency detected — [package] requires legal review")
+- Agent 4's `validate-specs.sh` hook checks that `.kiro/specs/compliance.md` EXISTS —
+  if this file is not generated, the pre-commit hook will fail
+- The `json:agent4-payload` language tag allows Agent 4 to locate and parse the block
+  using a simple regex: search for the fenced block tagged `json:agent4-payload`
