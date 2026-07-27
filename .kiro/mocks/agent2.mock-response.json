@@ -1,0 +1,204 @@
+{
+  "techSteering": {
+    "stack": [
+      "Next.js 15 (App Router)",
+      "TypeScript 5.x",
+      "Node.js 22 LTS",
+      "Vercel AI SDK",
+      "Zod",
+      "PostgreSQL",
+      "Docker",
+      "Terraform"
+    ],
+    "architecturePattern": "Clean",
+    "solidBoundaries": [
+      {
+        "principle": "Single Responsibility",
+        "rule": "Each module has exactly one reason to change",
+        "layer": "Domain"
+      },
+      {
+        "principle": "Open/Closed",
+        "rule": "Extend via new implementations of port interfaces, not by modifying existing code",
+        "layer": "Application"
+      },
+      {
+        "principle": "Liskov Substitution",
+        "rule": "All LlmPort implementations must be interchangeable without altering use case behavior",
+        "layer": "Infrastructure"
+      },
+      {
+        "principle": "Interface Segregation",
+        "rule": "Port interfaces define only the methods the use case needs",
+        "layer": "Application"
+      },
+      {
+        "principle": "Dependency Inversion",
+        "rule": "Application layer depends on port abstractions, not concrete infrastructure",
+        "layer": "Application"
+      }
+    ],
+    "securityGuards": [
+      {
+        "name": "Zod Input Validation",
+        "description": "All external inputs validated against strict Zod schemas at system boundaries",
+        "enforcement": "Middleware + Use Case entry"
+      },
+      {
+        "name": "JWT Authentication",
+        "description": "Bearer token validation for API route access",
+        "enforcement": "Next.js middleware"
+      },
+      {
+        "name": "CORS Policy",
+        "description": "Restrict cross-origin requests to allowed domains only",
+        "enforcement": "Next.js config + headers"
+      },
+      {
+        "name": "HTTPS Enforcement",
+        "description": "All traffic encrypted in transit via TLS",
+        "enforcement": "Infrastructure/CDN layer"
+      }
+    ]
+  },
+  "requirements": "# Functional Requirements — KiroSpec Studio\n\n## REQ-1: Specification Generation\n\nWHEN a user submits a product vision document, THE system SHALL generate a complete architecture specification within 60 seconds.\n\n## REQ-2: EARS Syntax Output\n\nWHEN the system generates requirements, THE system SHALL format all requirements strictly in EARS syntax using WHEN/WHILE/WHERE/IF/THE/SHALL clause patterns.\n\n## REQ-3: Mock Fallback\n\nWHEN Agent 2 is invoked without Agent 1 output, THE system SHALL load the fallback mock from .kiro/mocks/agent1.mock.json and proceed with specification generation.\n\n## REQ-4: Schema Validation\n\nWHEN the LLM produces output, THE Zod Validator SHALL validate the response against Agent2OutputSchema before persisting to disk.\n\nIF the LLM output fails schema validation, THEN THE system SHALL throw a typed ValidationError containing the field path and expected type.\n\n## REQ-5: File Persistence\n\nWHEN the system produces a valid Agent2Output, THE Kiro File Writer SHALL write four files: steering/tech.md, specs/requirements.md, specs/design.md, and specs/tasks.md.\n\nWHEN a target directory does not exist, THE Kiro File Writer SHALL create the directory structure before writing files.\n\n## REQ-6: Cost Estimation\n\nWHEN generating the design document, THE system SHALL include an AWS cost breakdown with separate MVP and Scale projections itemized by service name and monthly cost in USD.\n\n## REQ-7: Sequential Task Dependencies\n\nWHEN generating the task list, THE system SHALL produce tasks ordered sequentially where each task's dependencies reference only previously listed task IDs.",
+  "design": {
+    "domainEntities": [
+      {
+        "name": "Agent1Output",
+        "properties": [
+          { "name": "projectName", "type": "string", "required": true },
+          { "name": "productVision", "type": "string", "required": true },
+          { "name": "targetAudience", "type": "string", "required": true },
+          { "name": "valueProposition", "type": "string", "required": true },
+          { "name": "mvpFeatures", "type": "string[]", "required": true },
+          {
+            "name": "expectedMetrics",
+            "type": "ExpectedMetrics",
+            "required": true
+          }
+        ],
+        "relationships": ["consumed by Agent2"]
+      },
+      {
+        "name": "Agent2Output",
+        "properties": [
+          { "name": "techSteering", "type": "TechSteering", "required": true },
+          { "name": "requirements", "type": "string", "required": true },
+          { "name": "design", "type": "DesignOutput", "required": true },
+          { "name": "tasks", "type": "TaskItem[]", "required": true }
+        ],
+        "relationships": ["persisted by KiroFileWriter"]
+      },
+      {
+        "name": "TechSteering",
+        "properties": [
+          { "name": "stack", "type": "string[]", "required": true },
+          {
+            "name": "architecturePattern",
+            "type": "Clean | Hexagonal",
+            "required": true
+          },
+          {
+            "name": "solidBoundaries",
+            "type": "SolidBoundary[]",
+            "required": true
+          },
+          {
+            "name": "securityGuards",
+            "type": "SecurityGuard[]",
+            "required": true
+          }
+        ],
+        "relationships": ["written to steering/tech.md"]
+      }
+    ],
+    "mermaidDiagram": "sequenceDiagram\n    participant Client as API Client\n    participant Route as POST /api/generate-spec\n    participant UC as GenerateArchitectureSpec\n    participant Mock as JsonMockLoader\n    participant Val as Zod Validator\n    participant LLM as LLM Client\n    participant FW as KiroFileWriter\n    participant FS as File System\n\n    Client->>Route: POST { agent1Output?, preferredStack? }\n    Route->>UC: execute(options)\n\n    alt No agent1Output\n        UC->>Mock: load()\n        Mock->>FS: readFile(.kiro/mocks/agent1.mock.json)\n        FS-->>Mock: JSON\n        Mock->>Val: Agent1OutputSchema.safeParse()\n        Val-->>Mock: validated\n        Mock-->>UC: Agent1Output\n    else agent1Output provided\n        UC->>Val: Agent1OutputSchema.safeParse(input)\n        Val-->>UC: validated\n    end\n\n    UC->>LLM: invoke(systemPrompt, userPrompt)\n    LLM-->>UC: raw response\n\n    UC->>Val: Agent2OutputSchema.safeParse(response)\n    Val-->>UC: validated Agent2Output\n\n    UC->>FW: writeAll(output, .kiro)\n    FW->>FS: mkdir + writeFile (4 files)\n    FS-->>FW: ok\n    FW-->>UC: void\n\n    UC-->>Route: Agent2Output\n    Route-->>Client: 200 JSON",
+    "iamPolicySummary": [
+      {
+        "service": "Lambda",
+        "actions": ["lambda:InvokeFunction"],
+        "resource": "arn:aws:lambda:us-east-1:*:function:kirospec-*",
+        "effect": "Allow"
+      },
+      {
+        "service": "S3",
+        "actions": ["s3:GetObject", "s3:PutObject"],
+        "resource": "arn:aws:s3:::kirospec-specs/*",
+        "effect": "Allow"
+      },
+      {
+        "service": "CloudWatch",
+        "actions": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        "resource": "arn:aws:logs:us-east-1:*:log-group:/aws/lambda/kirospec-*",
+        "effect": "Allow"
+      }
+    ],
+    "awsCostProjection": {
+      "mvpMonthlyCostUsd": [
+        { "service": "Vercel Pro (hosting + edge)", "monthlyCostUsd": 20.0 },
+        {
+          "service": "OpenAI API (GPT-4o, ~500 calls)",
+          "monthlyCostUsd": 15.0
+        },
+        { "service": "Vercel Postgres (starter)", "monthlyCostUsd": 0.0 },
+        { "service": "CloudWatch Logs", "monthlyCostUsd": 2.0 }
+      ],
+      "scaleMonthlyCostUsd": [
+        {
+          "service": "Vercel Enterprise (hosting + edge)",
+          "monthlyCostUsd": 150.0
+        },
+        {
+          "service": "OpenAI API (GPT-4o, ~50k calls)",
+          "monthlyCostUsd": 1500.0
+        },
+        { "service": "Vercel Postgres (pro)", "monthlyCostUsd": 50.0 },
+        { "service": "CloudWatch Logs + Alarms", "monthlyCostUsd": 25.0 },
+        { "service": "WAF + Shield", "monthlyCostUsd": 30.0 }
+      ]
+    }
+  },
+  "tasks": [
+    {
+      "id": "task-1",
+      "title": "Project scaffolding",
+      "description": "Initialize Next.js project with TypeScript, Zod, Vercel AI SDK, and Vitest. Configure path aliases and test patterns.",
+      "dependencies": []
+    },
+    {
+      "id": "task-2",
+      "title": "Domain layer implementation",
+      "description": "Create types.ts with all interfaces, schemas.ts with Zod validation, and errors.ts with typed error hierarchy.",
+      "dependencies": ["task-1"]
+    },
+    {
+      "id": "task-3",
+      "title": "Application layer implementation",
+      "description": "Create GenerateArchitectureSpec use case with port interfaces, input/output validation pipeline, and error classification.",
+      "dependencies": ["task-2"]
+    },
+    {
+      "id": "task-4",
+      "title": "Infrastructure adapters",
+      "description": "Implement JsonMockLoader, LLM client adapter (Vercel AI SDK), and KiroFileWriter with markdown formatters.",
+      "dependencies": ["task-3"]
+    },
+    {
+      "id": "task-5",
+      "title": "API route and mock data",
+      "description": "Create Next.js App Router POST endpoint at /api/generate-spec and the agent1.mock.json fallback file.",
+      "dependencies": ["task-4"]
+    },
+    {
+      "id": "task-6",
+      "title": "Testing and verification",
+      "description": "Write property-based tests (fast-check, 100+ iterations) for all 6 correctness properties, unit tests for all layers, and integration tests for the full pipeline.",
+      "dependencies": ["task-5"]
+    }
+  ]
+}
