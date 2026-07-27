@@ -1,0 +1,1 @@
+WHEN the user submits a form, THE system SHALL validate all fields
