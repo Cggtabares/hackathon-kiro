@@ -65,7 +65,7 @@ The visual interface lives on the [`feat/ui-demo`](https://github.com/elecodes/h
 **Repo:** [github.com/elecodes/hackathon-kiro](https://github.com/elecodes/hackathon-kiro) — branch `feat/ui-demo`
 
 Features:
-- Simulated browser layout with per-agent tabs (Market, Technical, Costs, Compliance, Tasks)
+- Simulated browser layout with per-agent tabs (Market, Technical, Costs, Compliance, Tasks, DevSecOps)
 - Two input modes: quick (1-2 sentences) and expert (full brief)
 - Real-time 4-agent pipeline visualization
 - Next.js App Router with React components
@@ -77,12 +77,15 @@ Full design spec in [`ui-design.md`](./ui-design.md).
 ```
 hackathon-kiro/
 ├── src/
+│   ├── app/                 ← Next.js App Router: pages + API route handlers
+│   │   └── api/generate-spec/route.ts
 │   ├── domain/              ← Pure types, Zod schemas, typed errors
 │   ├── application/         ← Use cases + port interfaces
-│   ├── infrastructure/      ← Adapters (Vercel AI SDK, filesystem, mocks)
-│   ├── presentation/        ← REST API (Next.js App Router)
-│   ├── config/              ← LLM system prompts
-│   ├── lib/prompts/         ← Compliance agent prompt
+│   ├── infrastructure/      ← Adapters, grouped by concern
+│   │   ├── llm/             ← Vercel AI SDK client + mock client
+│   │   ├── writers/         ← Filesystem writers
+│   │   └── mocks/           ← JSON mock loaders
+│   ├── prompts/             ← LLM system prompts, one file per agent
 │   ├── __tests__/           ← Unit + property-based + integration tests
 │   └── index.ts             ← Factories: createAgent2(), createAgent4()
 ├── agents/
@@ -143,7 +146,7 @@ const result = await agent2.execute({ agent1Output, preferredStack });
 
 ## 🧩 Agent 3 — Legal & Compliance (guidelines)
 
-**Location:** `src/lib/prompts/compliance-agent.ts`
+**Location:** `src/prompts/compliance-agent.ts`
 
 System prompt for an external agent to perform legal audits based on Agent 1 and Agent 2 outputs. Covers:
 
